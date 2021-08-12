@@ -31,75 +31,21 @@ export function activate(context: ExtensionContext) {
   linter.activate();
   Utils.init(context);
 
-  let myCommands = [
-    {
-      command: "logtalk.linter.nextErrLine",
-      callback: () => {
-        linter.nextErrLine();
-      }
-    },
-    {
-      command: "logtalk.linter.prevErrLine",
-      callback: () => {
-        linter.prevErrLine();
-      }
-    },
-    {
-      command: "logtalk.load.document",
-      callback: uri => {
-        LogtalkTerminal.loadDocument(uri);
-      }
-    },
-    {
-      command: "logtalk.run.tests",
-      callback: uri => {
-        LogtalkTerminal.runTests(uri);
-      }
-    },
-    {
-      command: "logtalk.run.doclet",
-      callback: uri => {
-        LogtalkTerminal.runDoclet(uri);
-      }
-    },
-    {
-      command: "logtalk.scan.deadCode",
-      callback: uri => {
-        LogtalkTerminal.scanForDeadCode(uri);
-      }
-    },
-    {
-      command: "logtalk.generate.documentation",
-      callback: uri => {
-        LogtalkTerminal.genDocumentation(uri);
-      }
-    },
-    {
-      command: "logtalk.generate.diagrams",
-      callback: uri => {
-        LogtalkTerminal.genDiagrams(uri);
-      }
-    },
-    {
-      command: "logtalk.open",
-      callback: () => {
-        LogtalkTerminal.openLogtalk();
-      }
-    },
-    {
-      command: "logtalk.run.testers",
-      callback: uri => {
-        LogtalkTerminal.runTesters();
-      }
-    },
-    {
-      command: "logtalk.run.doclets",
-      callback: uri => {
-        LogtalkTerminal.runDoclets();
-      }
-    }
+  let logtalkCommands = [
+    { command: "logtalk.linter.nextErrLine",     callback: ()  => linter.nextErrLine()},
+    { command: "logtalk.linter.prevErrLine",     callback: ()  => linter.prevErrLine()},
+    { command: "logtalk.load.document",          callback: uri => LogtalkTerminal.loadDocument(uri)},
+    { command: "logtalk.run.tests",              callback: uri => LogtalkTerminal.runTests(uri)},
+    { command: "logtalk.run.doclet",             callback: uri => LogtalkTerminal.runDoclet(uri)},
+    { command: "logtalk.scan.deadCode",          callback: uri => LogtalkTerminal.scanForDeadCode(uri)},
+    { command: "logtalk.generate.documentation", callback: uri => LogtalkTerminal.genDocumentation(uri)},
+    { command: "logtalk.generate.diagrams",      callback: uri => LogtalkTerminal.genDiagrams(uri)},
+    { command: "logtalk.open",                   callback: ()  => LogtalkTerminal.openLogtalk()},
+    { command: "logtalk.run.testers",            callback: uri => LogtalkTerminal.runTesters()},
+    { command: "logtalk.run.doclets",            callback: uri => LogtalkTerminal.runDoclets()}
   ];
-  myCommands.map(command => {
+  
+  logtalkCommands.map(command => {
     context.subscriptions.push(
       commands.registerCommand(command.command, command.callback)
     );
