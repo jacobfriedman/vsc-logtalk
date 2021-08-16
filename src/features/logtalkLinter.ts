@@ -166,12 +166,12 @@ export default class LogtalkLinter implements CodeActionProvider {
         let message: string = null;
         if ((<any>error).code === "ENOENT") {
           message =
-            "Cannot lint the logtalk file. The Logtalk executable was not found. Use the 'logtalk.executablePath' setting to configure";
+            "Cannot lint the logtalk file. The Logtalk executable was not found. Use the 'logtalk.executable.path' setting to configure";
         } else {
           message = error.message
             ? error.message
             : `Failed to run logtalk executable using path: ${this
-                .executable}. Reason is unknown.`;
+                .executable.path}. Reason is unknown.`;
         }
         this.outputMsg(message);
       });

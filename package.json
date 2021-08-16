@@ -214,7 +214,7 @@
         "configuration": {
             "title": "",
             "properties": {
-                "logtalk.executable": {
+                "logtalk.executable.path": {
                     "type": "string",
                     "default": "/usr/local/bin/logtalk",
                     "description": "Points to the Logtalk executable."

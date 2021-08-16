@@ -23,32 +23,23 @@ export default class LogtalkTerminal {
   constructor() {}
 
   public static init(): Disposable {
+
     let section = workspace.getConfiguration("logtalk");
-    LogtalkTerminal._testerExec = section.get<string>(
-      "tester.script",
-      "logtalk_tester"
-    );
+
+    LogtalkTerminal._testerExec =   section.get<string>("tester.script", "logtalk_tester");
     LogtalkTerminal._outputChannel = window.createOutputChannel("Logtalk Testers & Doclets");
-    LogtalkTerminal._testerArgs = section.get<string[]>("tester.arguments");
-    LogtalkTerminal._docletExec = section.get<string>(
-      "doclet.script",
-      "logtalk_doclet"
-    );
-    LogtalkTerminal._docletArgs = section.get<string[]>("doclet.arguments");
-    LogtalkTerminal._docExec = section.get<string>(
-      "documentation.script",
-      "lgt2html"
-    );
-    LogtalkTerminal._docArgs = section.get<string[]>("documentation.arguments");
-    LogtalkTerminal._graphvizExec = section.get<string>(
-      "graphviz.executable",
-      "dot"
-    );
+    LogtalkTerminal._testerArgs =   section.get<string[]>("tester.arguments");
+    LogtalkTerminal._docletExec =   section.get<string>("doclet.script", "logtalk_doclet" );
+    LogtalkTerminal._docletArgs =   section.get<string[]>("doclet.arguments");
+    LogtalkTerminal._docExec =      section.get<string>("documentation.script", "lgt2html");
+    LogtalkTerminal._docArgs =      section.get<string[]>("documentation.arguments");
+    LogtalkTerminal._graphvizExec = section.get<string>("graphviz.executable", "dot");
     LogtalkTerminal._graphvizArgs = section.get<string[]>("graphviz.arguments");
-    LogtalkTerminal._graphvizExt = section.get<string[]>("graphviz.extension");
+    LogtalkTerminal._graphvizExt =  section.get<string[]>("graphviz.extension");
+    
     return (<any>window).onDidCloseTerminal(terminal => {
-      LogtalkTerminal._terminal = null;
-      terminal.dispose();
+        LogtalkTerminal._terminal = null;
+        terminal.dispose();
     });
   }
 
@@ -85,7 +76,7 @@ export default class LogtalkTerminal {
   public static async loadDocument(uri: Uri) {
     const file: string = await LogtalkTerminal.ensureFile(uri);
     LogtalkTerminal.createLogtalkTerm();
-    let goals = `logtalk_load('${file}').`;
+    let goals = `logtalk_load('${uri}').`;
     LogtalkTerminal.sendString(goals);
   }
 
