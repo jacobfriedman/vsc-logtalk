@@ -103,6 +103,7 @@ These commands can be triggered from editor/context and explorer/context menus v
 |                  Command | Description                                                                                                                                              | Key binding |
 | -----------------------: | :------------------------------------------------------------------------------------------------------------------------------------------------------- | :---------- |
 |            Load Document | Loads the active source file into the Logtalk process                                                                                                    | F9          |
+|            Make Document | Reloads the active source files into the Logtalk process                                                                                                 | F8          |
 |                Run Tests | Runs the tester file under the active source file directory                                                                                              |             |
 |               Run Doclet | Run the doclet file under the active source file directory                                                                                               |             |
 | Goto Next/Previous Error | Locate cursor to the nearest line with error/warning from current cursor location and the corresponding error/warning message displays in output channel | F7/shift-F7 |
