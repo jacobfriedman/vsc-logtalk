@@ -23,9 +23,7 @@ export default class LogtalkTerminal {
   constructor() {}
 
   public static init(): Disposable {
-
     let section = workspace.getConfiguration("logtalk");
-
     LogtalkTerminal._testerExec =   section.get<string>("tester.script", "logtalk_tester");
     LogtalkTerminal._outputChannel = window.createOutputChannel("Logtalk Testers & Doclets");
     LogtalkTerminal._testerArgs =   section.get<string[]>("tester.arguments");
@@ -36,7 +34,6 @@ export default class LogtalkTerminal {
     LogtalkTerminal._graphvizExec = section.get<string>("graphviz.executable", "dot");
     LogtalkTerminal._graphvizArgs = section.get<string[]>("graphviz.arguments");
     LogtalkTerminal._graphvizExt =  section.get<string[]>("graphviz.extension");
-    
     return (<any>window).onDidCloseTerminal(terminal => {
         LogtalkTerminal._terminal = null;
         terminal.dispose();
@@ -62,9 +59,9 @@ export default class LogtalkTerminal {
     }
   }
 
-  public static sendString(text: string) {
+  public static sendString(text: string, addNewLine = false) {
     LogtalkTerminal.createLogtalkTerm();
-    LogtalkTerminal._terminal.sendText(text);
+    LogtalkTerminal._terminal.sendText(text, addNewLine);
     LogtalkTerminal._terminal.show(false);
   }
 
@@ -76,8 +73,8 @@ export default class LogtalkTerminal {
   public static async loadDocument(uri: Uri) {
     const file: string = await LogtalkTerminal.ensureFile(uri);
     LogtalkTerminal.createLogtalkTerm();
-    let goals = `logtalk_load('${uri}').`;
-    LogtalkTerminal.sendString(goals);
+    let goals = "logtalk_load('"+file+"').\r";
+    LogtalkTerminal.sendString(goals, false);
   }
 
   public static async make(uri: Uri) {
