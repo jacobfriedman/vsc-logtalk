@@ -170,8 +170,7 @@ export default class LogtalkLinter implements CodeActionProvider {
         } else {
           message = error.message
             ? error.message
-            : `Failed to run logtalk executable using path: ${this
-                .executable.path}. Reason is unknown.`;
+            : `Failed to run logtalk executable using path: ${this.executable.path}. Reason is unknown.`;
         }
         this.outputMsg(message);
       });
