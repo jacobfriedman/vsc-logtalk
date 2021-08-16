@@ -1,16 +1,9 @@
 "use strict";
 import {
-  CommentRule,
-  Disposable,
-  IndentAction,
-  languages,
-  OnEnterRule,
-  Position,
-  Range,
-  Selection,
-  TextDocument,
-  window,
-  workspace
+  /* CommentRule, OnEnterRule, */
+  Disposable, IndentAction, languages,
+  Position, Range, Selection, 
+  TextDocument, window, workspace
 } from "vscode";
 
 export function loadEditHelpers(subscriptions: Disposable[]) {

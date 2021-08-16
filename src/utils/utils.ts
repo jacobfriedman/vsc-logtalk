@@ -31,7 +31,7 @@ export class Utils {
 
     Utils.RUNTIMEPATH = workspace
       .getConfiguration("logtalk")
-      .get<string>("executablePath", "logtalk");
+      .get<string>("executable.path", process.env.LOGTALKHOME);
     Utils.loadSnippets(context);
   }
 
@@ -119,6 +119,7 @@ export class Utils {
         encoding: "utf8",
         input: `functor(${wholePred}, N, A), write(name=N;arity=A).`
       });
+      
       if (pp.status === 0) {
         let out = pp.stdout.toString();
         let match = out.match(/name=(\w+);arity=(\d+)/);

@@ -1,15 +1,6 @@
 "use strict";
 
-import {
-  Terminal,
-  window,
-  workspace,
-  TextDocument,
-  Disposable,
-  OutputChannel,
-  TextEditor,
-  Uri
-} from "vscode";
+import { Terminal, window, workspace, TextDocument, Disposable, OutputChannel, Uri } from "vscode";
 import * as path from "path";
 import * as jsesc from "jsesc";
 import * as cp from "child_process";
@@ -68,7 +59,7 @@ export default class LogtalkTerminal {
 
     let section = workspace.getConfiguration("logtalk");
     if (section) {
-      let executable = jsesc(section.get<string>("executablePath", "logtalk"));
+      let executable = jsesc(section.get<string>("executable.path", "logtalk"));
       let args = section.get<string[]>("terminal.runtimeArgs");
       LogtalkTerminal._terminal = (<any>window).createTerminal(
         "Logtalk",
@@ -92,9 +83,16 @@ export default class LogtalkTerminal {
   }
 
   public static async loadDocument(uri: Uri) {
-    LogtalkTerminal.createLogtalkTerm();
     const file: string = await LogtalkTerminal.ensureFile(uri);
-    let goals = `set_logtalk_flag(report,warnings),logtalk_load('${file}').`;
+    LogtalkTerminal.createLogtalkTerm();
+    let goals = `logtalk_load('${file}').`;
+    LogtalkTerminal.sendString(goals);
+  }
+
+  public static async make(uri: Uri) {
+    const file: string = await LogtalkTerminal.ensureFile(uri);
+    LogtalkTerminal.createLogtalkTerm();
+    let goals = `logtalk_make.`;
     LogtalkTerminal.sendString(goals);
   }
 

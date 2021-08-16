@@ -2,8 +2,8 @@
     "name": "vsc-logtalk",
     "displayName": "VSC-Logtalk",
     "description": "Support for Logtalk language",
-    "version": "0.4.1",
-    "publisher": "arthurwang",
+    "version": "0.4.2",
+    "publisher": "jacobfriedman",
     "icon": "images/logtalk.png",
     "license": "MIT",
     "engines": {
@@ -20,16 +20,23 @@
         "snippet"
     ],
     "author": {
-        "name": "Arthur Wang",
-        "email": "rthrwang@gmail.com"
+        "name": "jacobfriedman",
+        "email": "jfriedman@graphstax.com"
     },
+    "contributors": [
+        {
+            "name" : "Arthur Wang",
+            "email" : "rthrwang@gmail.com",
+            "url" : "https://github.com/arthwang"
+          }
+    ],
     "repository": {
         "type": "git",
-        "url": "https://github.com/arthwang/vsc-logtalk.git"
+        "url": "https://github.com/jacobfriedman/vsc-logtalk"
     },
     "bugs": {
-        "url": "https://github.com/arthwang/vsc-logtalk/issues",
-        "email": "rthrwang@gmail.com"
+        "url": "https://github.com/jacobfriedman/vsc-logtalkissues",
+        "email": "jfriedman@graphstax.com"
     },
     "main": "./out/src/extension",
     "activationEvents": [
@@ -75,6 +82,10 @@
                 "title": "Logtalk: Load Document"
             },
             {
+                "command": "logtalk.make",
+                "title": "Logtalk: Make (Reload)"
+            },
+            {
                 "command": "logtalk.run.tests",
                 "title": "Logtalk: Run Tests"
             },
@@ -117,8 +128,12 @@
                 "key": "shift+f7"
             },
             {
-                "command": "logtalk.load.document",
+                "command": "logtalk.make",
                 "key": "f9"
+            },
+            {
+                "command": "logtalk.load.document",
+                "key": "f10"
             },
             {
                 "command": "logtalk.open",
@@ -127,6 +142,10 @@
         ],
         "menus": {
             "editor/context": [
+                {
+                    "command": "logtalk.make",
+                    "when": "resourceLangId == logtalk"
+                },
                 {
                     "command": "logtalk.load.document",
                     "when": "resourceLangId == logtalk"
@@ -161,6 +180,10 @@
                 }
             ],
             "explorer/context": [
+                {
+                    "command": "logtalk.make",
+                    "when": "resourceLangId == logtalk"
+                },
                 {
                     "command": "logtalk.load.document",
                     "when": "resourceLangId == logtalk"
@@ -266,7 +289,7 @@
         "test": "tsc ./tests/runTest.ts",
         "syntax4logtalk": "yaml2json --pretty --save ./syntaxes/logtalk.tmLanguage.yaml",
         "vsix:make": "vsce package",
-        "vsix:install": "code --install-extension vsc-logtalk-0.4.1.vsix"
+        "vsix:install": "code --install-extension vsc-logtalk-0.4.2.vsix"
     },
     "devDependencies": {
         "@types/bluebird": "^3.5.25",

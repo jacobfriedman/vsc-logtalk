@@ -1,16 +1,16 @@
 # VSC-Logtalk
 
-A VS Code extension which provides language support for Logtalk.
+A VS Code extension which provides language support for Logtalk. Forked from the [original plugin by Arthur Wang](https://github.com/arthwang/vsc-logtalk).
 
 ---
 
-[Features](#features) | [Configurations](#configurations) | [Bug Reporting](https://github.com/arthwang/vsc-logtalk/issues)
+[Features](#features) | [Configurations](#configurations) | [Bug Reporting](https://github.com/jacobfriedman/vsc-logtalk/issues)
 
 ---
 
 ## Note before installation
 
-This extension can be installed via extensions viewlet of VS Code or 'Extensions: install extension' command from the command palette. The author notices that it is developed and tested in **_Logtalk 3.12.0_** and **_VS Code 1.17_** on **_Debian 9.0_** (stretch). It's not yet tested under other environments.
+This extension can be installed via extensions viewlet of VS Code or 'Extensions: install extension' command from the command palette. The author notices that it is developed and tested in **_Logtalk 3.49.0-b04_** and **_VS Code 1.60_** on **_Debian Ubuntu 20 (LTS)_**. It's not yet tested under other environments.
 
 ## Features
 
@@ -173,14 +173,25 @@ You may install the extension directly from the .vsix file included in this repo
 
 `vsix:make` makes the .vsix file, `vsix:install` installs it.
 
+## Update Notes
+
+### Version 4:
+
+- Logtalk linter does not run upon opening a document or workspace .
+- F9 performs `logtalk_make`.
+- F10 loads via `logtalk_load`.
 
 ## Contributions
 
-[Pull requests](https://github.com/arthwang/vsc-logtalk/pulls) are welcome.
+[Pull requests](https://github.com/jacobfriedman/vsc-logtalk/pulls) are welcome.
 
-## Acknowledgements
+## Acknowledgements & Contributors
 
-The author of this extension thanks Professor Paulo Moura who is the author of Logtalk for his patient help and support. Syntax highlighting, some snippets, and some commands are integrated from his distro of Logtalk.
+### Arthur Wang (Original Author)
+
+Due to Arthur's unavailability at the time of this plugin's development and since-deprecated modules, this extension has been adopted by new authors.
+
+The original author of this extension thanks Professor Paulo Moura who is the author of Logtalk for his patient help and support. Syntax highlighting, some snippets, and some commands are integrated from his distro of Logtalk.
 
 ## License
 

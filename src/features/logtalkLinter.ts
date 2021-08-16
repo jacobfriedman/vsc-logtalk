@@ -180,7 +180,7 @@ export default class LogtalkLinter implements CodeActionProvider {
   private loadConfiguration(): void {
     let section = workspace.getConfiguration("logtalk");
     if (section) {
-      this.executable = section.get<string>("executablePath", "logtalk");
+      this.executable = section.get<string>("executable.path", "logtalk");
       if (this.documentListener) {
         this.documentListener.dispose();
       }
@@ -189,24 +189,13 @@ export default class LogtalkLinter implements CodeActionProvider {
       }
     }
 
-    this.openDocumentListener = workspace.onDidOpenTextDocument(e => {
-      this.triggerLinter(e);
-    });
+    this.documentListener = workspace.onDidSaveTextDocument(e => this.doPlint, this);
+    /* workspace.textDocuments.forEach(this.triggerLinter, this); */
 
-    this.documentListener = workspace.onDidSaveTextDocument(this.doPlint, this);
-
-    workspace.textDocuments.forEach(this.triggerLinter, this);
   }
 
-  private triggerLinter(textDocument: TextDocument) {
-    if (textDocument.languageId !== "logtalk") {
-      return;
-    }
-    this.doPlint(textDocument);
-  }
+  public activate(subscriptions): void {
 
-  public activate(): void {
-    let subscriptions: Disposable[] = this.context.subscriptions;
     this.diagnosticCollection = languages.createDiagnosticCollection();
 
     workspace.onDidChangeConfiguration(
@@ -214,12 +203,15 @@ export default class LogtalkLinter implements CodeActionProvider {
       this,
       subscriptions
     );
-    this.loadConfiguration();
+    
     if (this.outputChannel === null) {
       this.outputChannel = window.createOutputChannel("Logtalk Linter");
       this.outputChannel.clear();
     }
-    workspace.onDidOpenTextDocument(this.doPlint, this, subscriptions);
+
+    this.loadConfiguration();
+
+    // workspace.onDidOpenTextDocument(this.doPlint, this, subscriptions);
     workspace.onDidCloseTextDocument(
       textDocument => {
         this.diagnosticCollection.delete(textDocument.uri);
