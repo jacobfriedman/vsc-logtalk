@@ -1,5 +1,6 @@
 ("use strict");
 import { spawn } from "process-promises";
+
 import {
   CancellationToken,
   CodeActionContext,
@@ -22,7 +23,9 @@ import {
   workspace,
   WorkspaceEdit
 } from "vscode";
-import { basename } from "path";
+import { dirname, basename } from "path";
+
+import LogtalkTerminal from "./logtalkTerminal"; 
 
 export default class LogtalkLinter implements CodeActionProvider {
   private diagnosticCollection: DiagnosticCollection;
@@ -37,6 +40,7 @@ export default class LogtalkLinter implements CodeActionProvider {
 
   constructor(private context: ExtensionContext) {
     this.executable = null;
+    this.loadConfiguration();
   }
 
   provideCodeActions(
@@ -77,23 +81,24 @@ export default class LogtalkLinter implements CodeActionProvider {
     }
   }
 
-  private doPlint(textDocument: TextDocument) {
+  public doPlint(textDocument: TextDocument, terminal: LogtalkTerminal) {
     if (textDocument.languageId != "logtalk") {
       return;
     }
+
     this.diagnostics = {};
     this.sortedDiagIndex = {};
     this.diagnosticCollection.delete(textDocument.uri);
-    let options = workspace.rootPath
-      ? { cwd: workspace.rootPath, encoding: "utf8" }
-      : undefined;
 
     let args: string[] = [],
-      goals: string = `logtalk_load('${textDocument.fileName}').`;
-    let lineErr: string = "";
+        goals: string = `logtalk_load('${textDocument.fileName}').`,
+        lineErr: string = "";
 
-    let child = spawn(this.executable, args, options)
+    let cwd = dirname(textDocument.fileName);
+
+    let child = spawn(this.executable, args, {cwd})
       .on("process", process => {
+          console.log('spawned!');
         if (process.pid) {
           process.stdin.write(goals);
           process.stdin.end();
@@ -101,10 +106,11 @@ export default class LogtalkLinter implements CodeActionProvider {
         }
       })
       .on("stdout", out => {
-        // console.log("lintout:" + out + "\n");
+        console.log("lintout:" + out + "\n");
+        terminal.sendString(out, false);
       })
       .on("stderr", (errStr: string) => {
-        // console.log("linterr: " + errStr);
+        console.log("linterr: " + errStr);
         if (lineErr === "") {
           let type: string;
           let regex = /^(\*|\!)\s*(.+)/;
@@ -129,7 +135,8 @@ export default class LogtalkLinter implements CodeActionProvider {
           }
         }
       })
-      .then(result => {
+      .then(result => { 
+          console.log('fulfilled');
         if (lineErr) {
           this.parseIssue(lineErr + "\n");
         }
@@ -164,6 +171,7 @@ export default class LogtalkLinter implements CodeActionProvider {
       })
       .catch(error => {
         let message: string = null;
+        console.log(error);
         if ((<any>error).code === "ENOENT") {
           message =
             "Cannot lint the logtalk file. The Logtalk executable was not found. Use the 'logtalk.executable.path' setting to configure";
@@ -175,6 +183,15 @@ export default class LogtalkLinter implements CodeActionProvider {
         this.outputMsg(message);
       });
   }
+
+  /*public triggerLinter(textDocument: TextDocument) {
+    if (textDocument.languageId !== "logtalk") {
+      return;
+    }
+
+    this.doPlint(textDocument);
+  }
+  */
 
   private loadConfiguration(): void {
     let section = workspace.getConfiguration("logtalk");

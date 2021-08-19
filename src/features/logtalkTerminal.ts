@@ -1,6 +1,6 @@
 "use strict";
 
-import { Terminal, window, workspace, TextDocument, Disposable, OutputChannel, Uri } from "vscode";
+import { Terminal, window, workspace, TextDocument, Disposable, OutputChannel, Uri, ExtensionContext } from "vscode";
 import * as path from "path";
 import * as jsesc from "jsesc";
 import * as cp from "child_process";
@@ -8,6 +8,7 @@ import { spawn } from "process-promises";
 import LogtalkLinter from "./logtalkLinter";
 
 export default class LogtalkTerminal {
+  private static _context: ExtensionContext;
   private static _terminal: Terminal;
   private static _testerExec: string;
   private static _testerArgs: string[];
@@ -20,9 +21,13 @@ export default class LogtalkTerminal {
   private static _graphvizExt: string[];
   private static _outputChannel: OutputChannel;
 
-  constructor() {}
+  constructor() {
+  }
 
-  public static init(): Disposable {
+  public static init(context: ExtensionContext): Disposable {
+
+    LogtalkTerminal._context = context;
+
     let section = workspace.getConfiguration("logtalk");
     LogtalkTerminal._testerExec =   section.get<string>("tester.script", "logtalk_tester");
     LogtalkTerminal._outputChannel = window.createOutputChannel("Logtalk Testers & Doclets");
@@ -34,6 +39,7 @@ export default class LogtalkTerminal {
     LogtalkTerminal._graphvizExec = section.get<string>("graphviz.executable", "dot");
     LogtalkTerminal._graphvizArgs = section.get<string[]>("graphviz.arguments");
     LogtalkTerminal._graphvizExt =  section.get<string[]>("graphviz.extension");
+
     return (<any>window).onDidCloseTerminal(terminal => {
         LogtalkTerminal._terminal = null;
         terminal.dispose();
@@ -54,6 +60,7 @@ export default class LogtalkTerminal {
         executable,
         args
       );
+
     } else {
       throw new Error("configuration settings error: logtalk");
     }
@@ -70,11 +77,29 @@ export default class LogtalkTerminal {
     LogtalkTerminal._terminal.show(true);
   }
 
-  public static async loadDocument(uri: Uri) {
+  public static async loadDocument(uri: Uri, linter: LogtalkLinter) {
+
     const file: string = await LogtalkTerminal.ensureFile(uri);
     LogtalkTerminal.createLogtalkTerm();
+
+    await workspace.openTextDocument(uri).then(
+        function(textDocument: TextDocument) {
+            linter.doPlint(textDocument, LogtalkTerminal._terminal)
+        });
+
+
     let goals = "logtalk_load('"+file+"').\r";
-    LogtalkTerminal.sendString(goals, false);
+    // LogtalkTerminal.sendString(goals, false);
+    // await ensureFile(url: Uri);
+
+    /*
+    LogtalkTerminal.spawnScript(
+        ["logtalk_load", "logtalk.document.load", LogtalkTerminal._testerExec],
+        LogtalkTerminal._testerExec,
+        LogtalkTerminal._testerArgs
+      );
+      */
+
   }
 
   public static async make(uri: Uri) {
@@ -146,6 +171,7 @@ export default class LogtalkTerminal {
       LogtalkTerminal._testerArgs
     );
   }
+
   private static spawnScript(type: string[], path: string, args: string[]) {
     let dir: string;
     dir = workspace.rootPath;
@@ -208,3 +234,5 @@ export default class LogtalkTerminal {
     return dir;
   }
 }
+
+

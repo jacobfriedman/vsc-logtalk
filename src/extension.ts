@@ -36,7 +36,7 @@ export function activate(context: ExtensionContext) {
   let logtalkCommands = [
     { command: "logtalk.linter.nextErrLine",     callback: ()   => linter.nextErrLine()},
     { command: "logtalk.linter.prevErrLine",     callback: ()   => linter.prevErrLine()},
-    { command: "logtalk.load.document",          callback: uri  => LogtalkTerminal.loadDocument(uri)},
+    { command: "logtalk.load.document",          callback: uri  => LogtalkTerminal.loadDocument(uri, linter)},
     { command: "logtalk.make",                   callback: async (uri)  => LogtalkTerminal.make(uri)},
     { command: "logtalk.run.tests",              callback: uri  => LogtalkTerminal.runTests(uri)},
     { command: "logtalk.run.doclet",             callback: uri  => LogtalkTerminal.runDoclet(uri)},
@@ -63,7 +63,7 @@ export function activate(context: ExtensionContext) {
   context.subscriptions.push(
     languages.registerHoverProvider(LOGTALK_MODE, new LogtalkHoverProvider())
   );
-  context.subscriptions.push(LogtalkTerminal.init());
+  context.subscriptions.push(LogtalkTerminal.init(context));
 }
 // this method is called when your extension is deactivated
 export function deactivate() {}

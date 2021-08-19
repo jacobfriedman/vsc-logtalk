@@ -179,8 +179,8 @@ You may install the extension directly from the .vsix file included in this repo
 ### Version 4:
 
 - Logtalk linter does not run upon opening a document or workspace .
-- F9 performs `logtalk_make`.
-- F10 loads via `logtalk_load`.
+- F8 performs `logtalk_make`.
+- F9 loads via `logtalk_load`.
 
 ## Contributions
 
