@@ -80,17 +80,26 @@ export default class LogtalkTerminal {
   public static async loadDocument(uri: Uri, linter: LogtalkLinter) {
 
     const file: string = await LogtalkTerminal.ensureFile(uri);
+    let logtalkHome: string = '';
+    let section = workspace.getConfiguration("logtalk");
+    if (section) {
+        logtalkHome = jsesc(section.get<string>("home.path", "logtalk"));
+    } else {
+        throw new Error("configuration settings error: logtalk");
+    }
     LogtalkTerminal.createLogtalkTerm();
 
-    await workspace.openTextDocument(uri).then(
-        function(textDocument: TextDocument) {
-            linter.doPlint(textDocument, LogtalkTerminal._terminal)
+   /* await workspace.openTextDocument(uri).then(
+        (textDocument: TextDocument) => {
+            linter.doPlint(textDocument, LogtalkTerminal.sendString)
         });
+    */
 
 
-    let goals = "logtalk_load('"+file+"').\r";
-    // LogtalkTerminal.sendString(goals, false);
-    // await ensureFile(url: Uri);
+
+    let goals = `logtalk_load([coding('vscode/hook.lgt'), ${file}]).\r`;
+    //let goals = `logtalk_load('[${file},${logtalkHome}/]').\r`;
+    LogtalkTerminal.sendString(goals, false);
 
     /*
     LogtalkTerminal.spawnScript(

@@ -214,6 +214,11 @@
         "configuration": {
             "title": "",
             "properties": {
+                "logtalk.home.path": {
+                    "type": "string",
+                    "default": "$LOGTALKHOME",
+                    "description": "Points to the Logtalk home directory."
+                },
                 "logtalk.executable.path": {
                     "type": "string",
                     "default": "/usr/local/bin/logtalk",

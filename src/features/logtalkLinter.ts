@@ -81,7 +81,7 @@ export default class LogtalkLinter implements CodeActionProvider {
     }
   }
 
-  public doPlint(textDocument: TextDocument, terminal: LogtalkTerminal) {
+  public doPlint(textDocument: TextDocument, sendString) {
     if (textDocument.languageId != "logtalk") {
       return;
     }
@@ -96,6 +96,10 @@ export default class LogtalkLinter implements CodeActionProvider {
 
     let cwd = dirname(textDocument.fileName);
 
+   
+
+
+
     let child = spawn(this.executable, args, {cwd})
       .on("process", process => {
           console.log('spawned!');
@@ -106,10 +110,11 @@ export default class LogtalkLinter implements CodeActionProvider {
         }
       })
       .on("stdout", out => {
+        sendString('hi');
         console.log("lintout:" + out + "\n");
-        terminal.sendString(out, false);
       })
       .on("stderr", (errStr: string) => {
+        sendString('hi');
         console.log("linterr: " + errStr);
         if (lineErr === "") {
           let type: string;
