@@ -96,10 +96,6 @@ export default class LogtalkLinter implements CodeActionProvider {
 
     let cwd = dirname(textDocument.fileName);
 
-   
-
-
-
     let child = spawn(this.executable, args, {cwd})
       .on("process", process => {
           console.log('spawned!');
@@ -110,11 +106,9 @@ export default class LogtalkLinter implements CodeActionProvider {
         }
       })
       .on("stdout", out => {
-        sendString('hi');
         console.log("lintout:" + out + "\n");
       })
       .on("stderr", (errStr: string) => {
-        sendString('hi');
         console.log("linterr: " + errStr);
         if (lineErr === "") {
           let type: string;
@@ -134,7 +128,7 @@ export default class LogtalkLinter implements CodeActionProvider {
           let match = errStr.match(regex);
           let errMsg: string;
           if (match) {
-            lineErr = lineErr.replace(":", `:${match[1]}:${match[2]}:0:200:`);
+            lineErr = lineErr.replace(":", `:${match[1]}:${match[2]}`);
             this.parseIssue(lineErr + "\n");
             lineErr = "";
           }

@@ -10,7 +10,7 @@ A VS Code extension which provides language support for Logtalk. Forked from the
 
 ## Note before installation
 
-This extension can be installed via extensions viewlet of VS Code or 'Extensions: install extension' command from the command palette. The author notices that it is developed and tested in **_Logtalk 3.49.0-b04_** and **_VS Code 1.60_** on **_Debian Ubuntu 20 (LTS)_**. It's not yet tested under other environments.
+This extension can be installed via extensions viewlet of VS Code or 'Extensions: install extension' command from the command palette. The author notices that it is developed and tested in **_Logtalk 3.49.0-b04_** and **_VS Code 1.60_** on **_Debian Ubuntu 20 (LTS)_** with **Node 12.0.0** . It's not yet tested under other environments.
 
 ## Features
 
@@ -119,7 +119,7 @@ These commands can be triggered from editor/context and explorer/context menus v
 
 * The user can configure settings via VS Code menu File/Preferences/Settings. Entering 'logtalk' in the input box will show up Logtalk settings. The settings in this extension with their default values are:
 
-  * "logtalk.executable": "/usr/local/bin/logtalk"
+  * "logtalk.executable.path": "/usr/local/bin/logtalk"
 
     This setting points to the Logtalk executable, which can be created by running the `logtalk_backend_select` script. In alternative, use the absolute path to the integration script you want to use, e.g. `swilgt` or `swilgt.sh`.
 

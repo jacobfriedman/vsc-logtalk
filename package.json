@@ -25,17 +25,17 @@
     },
     "contributors": [
         {
-            "name" : "Arthur Wang",
-            "email" : "rthrwang@gmail.com",
-            "url" : "https://github.com/arthwang"
-          }
+            "name": "Arthur Wang",
+            "email": "rthrwang@gmail.com",
+            "url": "https://github.com/arthwang"
+        }
     ],
     "repository": {
         "type": "git",
-        "url": "https://github.com/jacobfriedman/vsc-logtalk"
+        "url": "https://gitlab.optimusprime.ai/jfriedman/visual-studio-code-logtalk-extension"
     },
     "bugs": {
-        "url": "https://github.com/jacobfriedman/vsc-logtalkissues",
+        "url": "https://gitlab.optimusprime.ai/jfriedman/visual-studio-code-logtalk-extension",
         "email": "jfriedman@graphstax.com"
     },
     "main": "./out/src/extension",
@@ -293,7 +293,7 @@
         "compile": "tsc -watch -p ./",
         "test": "tsc ./tests/runTest.ts",
         "syntax4logtalk": "yaml2json --pretty --save ./syntaxes/logtalk.tmLanguage.yaml",
-        "vsix:make": "vsce package",
+        "vsix:make": "vsce package --baseImagesUrl https://raw.githubusercontent.com/llvm/llvm-project/master/clang-tools-extra/clangd/clients/clangd-vscode/",
         "vsix:install": "code --install-extension vsc-logtalk-0.4.2.vsix"
     },
     "devDependencies": {
@@ -301,6 +301,7 @@
         "@types/mocha": "^2.2.48",
         "@types/node": "^8.10.66",
         "@vscode/test-electron": "^1.6.2",
+        "@xmldom/xmldom": "git+https://github.com/xmldom/xmldom.git",
         "html2commonmark": "^0.6.1",
         "typescript": "^4.3.5",
         "vsce": "^1.96.1"
@@ -317,6 +318,7 @@
         "process-promises": "^1.0.0",
         "split": "^1.0.1",
         "stack-trace": "0.0.10",
+        "tail": "^2.2.3",
         "vscode-debugadapter": "^1.33.0",
         "xmldom": "git+https://github.com/xmldom/xmldom.git",
         "xpath": "0.0.24"

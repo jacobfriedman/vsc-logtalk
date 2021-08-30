@@ -12,7 +12,7 @@ import { Utils } from "../utils/utils";
 import * as fs from "fs";
 import * as path from "path";
 import * as xpath from "xpath";
-import { DOMParser } from "xmldom";
+import { DOMParser } from "@xmldom/xmldom";
 
 export default class LogtalkHoverProvider implements HoverProvider {
 
