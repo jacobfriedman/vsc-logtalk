@@ -32,11 +32,15 @@ export default class LogtalkLinter implements CodeActionProvider {
   private diagnostics: { [docName: string]: Diagnostic[] } = {};
   private filePathIds: { [id: string]: string } = {};
   private sortedDiagIndex: { [docName: string]: number[] } = {};
-  private msgRegex = /([^:]+):\s*([^:]+):(\d+):((\d+):)?((\d+):)?\s*([\s\S]*)/;
+  private msgRegex = /([^:]+):\s*([^:]+):(\d+):?\s*([\s\S]*)/;
+
+  private msgRegexSingle = /(\*|\!)+\s{5}(.+)\n[\*|\!]+\s{7}(.+)\n[\*|\!]\s{7}in file\s(\S+).+line\s(\d+)/;
+  private msgRegexMulti = /(\*|\!)+\s{5}(.+)\n[\*|\!]+\s{7}(.+)\n[\*|\!]\s{7}in file\s(\S+).+between lines\s(\d+)-(\d+)/;
+
   private executable: string;
   private documentListener: Disposable;
   private openDocumentListener: Disposable;
-  private outputChannel: OutputChannel = null;
+  public outputChannel: OutputChannel = null;
 
   constructor(private context: ExtensionContext) {
     this.executable = null;
@@ -53,24 +57,27 @@ export default class LogtalkLinter implements CodeActionProvider {
     return codeActions;
   }
   private parseIssue(issue: string) {
-    let match = issue.match(this.msgRegex);
-    if (match == null) return null;
-    let fileName = this.filePathIds[match[2]]
-      ? this.filePathIds[match[2]]
-      : match[2];
+    let match = issue.match(this.msgRegexSingle) || issue.match(this.msgRegexMulti);
+    if (match == null) { return null; }
+
     let severity: DiagnosticSeverity;
-    if (match[1] == "ERROR") severity = DiagnosticSeverity.Error;
-    else if (match[1] == "Warning") severity = DiagnosticSeverity.Warning;
-    let line = parseInt(match[3]) - 1;
-    // move up to above line if the line to mark error is empty
-    line = line < 0 ? 0 : line;
-    let fromCol = match[5] ? parseInt(match[5]) : 0;
-    fromCol = fromCol < 0 ? 0 : fromCol;
-    let toCol = match[7] ? parseInt(match[7]) : 200;
+    if(match[1] == '*') {
+      severity = DiagnosticSeverity.Warning
+    } else {
+      severity = DiagnosticSeverity.Error
+    } 
+
+    let fileName = this.filePathIds[match[4]]
+      ? this.filePathIds[match[4]]
+      : match[4];
+
+    let line = parseInt(match[5]);
+    let fromCol = 0
+    let toCol = 200 // Default horizontal range
     let fromPos = new Position(line, fromCol);
-    let toPos = new Position(line, toCol);
+    let toPos = match.length == 7 ? new Position(parseInt(match[6]), toCol) : new Position(line, toCol);
     let range = new Range(fromPos, toPos);
-    let errMsg = match[8];
+    let errMsg = match[2] + ' ' + match[3];
     let diag = new Diagnostic(range, errMsg, severity);
     if (diag) {
       if (!this.diagnostics[fileName]) {
@@ -79,118 +86,46 @@ export default class LogtalkLinter implements CodeActionProvider {
         this.diagnostics[fileName].push(diag);
       }
     }
+
   }
 
-  public doPlint(textDocument: TextDocument, sendString) {
-    if (textDocument.languageId != "logtalk") {
-      return;
-    }
-
+  public lint(textDocument: TextDocument, message) {
+    console.log(message);
     this.diagnostics = {};
     this.sortedDiagIndex = {};
     this.diagnosticCollection.delete(textDocument.uri);
 
-    let args: string[] = [],
-        goals: string = `logtalk_load('${textDocument.fileName}').`,
-        lineErr: string = "";
-
-    let cwd = dirname(textDocument.fileName);
-
-    let child = spawn(this.executable, args, {cwd})
-      .on("process", process => {
-          console.log('spawned!');
-        if (process.pid) {
-          process.stdin.write(goals);
-          process.stdin.end();
-          this.outputChannel.clear();
-        }
-      })
-      .on("stdout", out => {
-        console.log("lintout:" + out + "\n");
-      })
-      .on("stderr", (errStr: string) => {
-        console.log("linterr: " + errStr);
-        if (lineErr === "") {
-          let type: string;
-          let regex = /^(\*|\!)\s*(.+)/;
-          let match = errStr.match(regex);
-          if (match) {
-            if (match[1] === "*") {
-              type = "Warning";
-            }
-            if (match[1] === "!") {
-              type = "ERROR";
-            }
-            lineErr = type + ":" + match[2];
-          }
-        } else if (/in file/.test(errStr)) {
-          let regex = /in file (\S+).+lines?\s+(\d+)/;
-          let match = errStr.match(regex);
-          let errMsg: string;
-          if (match) {
-            lineErr = lineErr.replace(":", `:${match[1]}:${match[2]}`);
-            this.parseIssue(lineErr + "\n");
-            lineErr = "";
-          }
-        }
-      })
-      .then(result => { 
-          console.log('fulfilled');
-        if (lineErr) {
-          this.parseIssue(lineErr + "\n");
-        }
-        for (let doc in this.diagnostics) {
-          let index = this.diagnostics[doc]
-            .map((diag, i) => {
-              return [diag.range.start.line, i];
-            })
-            .sort((a, b) => {
-              return a[0] - b[0];
-            });
-          this.sortedDiagIndex[doc] = index.map(item => {
-            return item[1];
-          });
-          this.diagnosticCollection.set(Uri.file(doc), this.diagnostics[doc]);
-        }
-        this.outputChannel.clear();
-        for (let doc in this.sortedDiagIndex) {
-          let si = this.sortedDiagIndex[doc];
-          for (let i = 0; i < si.length; i++) {
-            let diag = this.diagnostics[doc][si[i]];
-            let severity =
-              diag.severity === DiagnosticSeverity.Error ? "ERROR" : "Warning";
-            let msg = `${basename(doc)}:${diag.range.start.line +
-              1}:\t${severity}:\t${diag.message}\n`;
-            this.outputChannel.append(msg);
-          }
-          if (si.length > 0) {
-            this.outputChannel.show(true);
-          }
-        }
-      })
-      .catch(error => {
-        let message: string = null;
-        console.log(error);
-        if ((<any>error).code === "ENOENT") {
-          message =
-            "Cannot lint the logtalk file. The Logtalk executable was not found. Use the 'logtalk.executable.path' setting to configure";
-        } else {
-          message = error.message
-            ? error.message
-            : `Failed to run logtalk executable using path: ${this.executable}. Reason is unknown.`;
-        }
-        this.outputMsg(message);
+    this.parseIssue(message);
+    
+    console.log('Single:', message.match(this.msgRegexSingle));
+    console.log('Multi:', message.match(this.msgRegexMulti));
+    
+    for (let doc in this.diagnostics) {
+      let index = this.diagnostics[doc]
+        .map((diag, i) => {
+          return [diag.range.start.line, i];
+        })
+        .sort((a, b) => {
+          return a[0] - b[0];
+        });
+      this.sortedDiagIndex[doc] = index.map(item => {
+        return item[1];
       });
-  }
-
-  /*public triggerLinter(textDocument: TextDocument) {
-    if (textDocument.languageId !== "logtalk") {
-      return;
+      this.diagnosticCollection.set(Uri.file(doc), this.diagnostics[doc]);
     }
-
-    this.doPlint(textDocument);
+    for (let doc in this.sortedDiagIndex) {
+      let si = this.sortedDiagIndex[doc];
+      for (let i = 0; i < si.length; i++) {
+        let diag = this.diagnostics[doc][si[i]];
+        let severity =
+          diag.severity === DiagnosticSeverity.Error ? "ERROR" : "Warning";
+        this.outputChannel.append(message)
+      }
+      if (si.length > 0) {
+        this.outputChannel.show(true);
+      }
+    }
   }
-  */
 
   private loadConfiguration(): void {
     let section = workspace.getConfiguration("logtalk");
@@ -203,10 +138,6 @@ export default class LogtalkLinter implements CodeActionProvider {
         this.openDocumentListener.dispose();
       }
     }
-
-    this.documentListener = workspace.onDidSaveTextDocument(e => this.doPlint, this);
-    /* workspace.textDocuments.forEach(this.triggerLinter, this); */
-
   }
 
   public activate(subscriptions): void {
@@ -289,6 +220,7 @@ export default class LogtalkLinter implements CodeActionProvider {
         position = diagnostics[si[i]].range.start;
       }
     }
+
     editor.revealRange(diagnostics[si[i]].range, TextEditorRevealType.InCenter);
 
     diagnostics.forEach(item => {
@@ -302,5 +234,6 @@ export default class LogtalkLinter implements CodeActionProvider {
     });
     editor.selection = new Selection(position, position);
     this.outputChannel.show(true);
+    
   }
 }

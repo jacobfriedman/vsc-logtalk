@@ -3,16 +3,15 @@
 import { Terminal, window, workspace, TextDocument, Disposable, OutputChannel, Uri, ExtensionContext } from "vscode";
 import * as path from "path";
 import * as jsesc from "jsesc";
-import * as cp from "child_process";
 import * as fs from "fs";
+import * as cp from 'child_process';
 import { spawn } from "process-promises";
 import LogtalkLinter from "./logtalkLinter";
 import { isFunction } from "util";
 
-
 export default class LogtalkTerminal {
   private static _context: ExtensionContext;
-  private static _messageProcess;
+  private static _messages : any;
   private static _terminal: Terminal;
   private static _testerExec: string;
   private static _testerArgs: string[];
@@ -32,7 +31,6 @@ export default class LogtalkTerminal {
   public static init(context: ExtensionContext): Disposable {
 
     LogtalkTerminal._context = context;
-    LogtalkTerminal._messageProcess = {}
 
     let section = workspace.getConfiguration("logtalk");
     LogtalkTerminal._testerExec =   section.get<string>("tester.script", "logtalk_tester");
@@ -49,7 +47,10 @@ export default class LogtalkTerminal {
     return (<any>window).onDidCloseTerminal(terminal => {
         LogtalkTerminal._terminal = null;
         terminal.dispose();
-        LogtalkTerminal._messageProcess.kill('SIGHUP');
+        if ('kill' in LogtalkTerminal._messages) {
+          LogtalkTerminal._messages.kill('SIGHUP');
+        }
+        
     });
   }
 
@@ -61,41 +62,15 @@ export default class LogtalkTerminal {
     let section = workspace.getConfiguration("logtalk");
     if (section) {
 
-      let pathLogtalkHome         = jsesc(section.get<string>("home.path", "logtalk")),
-          pathLogtalkMessageFile  = `'${pathLogtalkHome}/coding/vscode/.messages'`;
-
-      fs.unlink(pathLogtalkMessageFile, (error) => {
-        if (error) { 
-          return new Error(`Could not remove the logtalk message file ${pathLogtalkMessageFile}.`);
-        } else {
-          fs.writeFile(`${pathLogtalkMessageFile}`, '', (error) => {
-            if(error) {
-              return new Error(`Could not create the logtalk message file ${pathLogtalkMessageFile}.`)
-            } else {
-
-              LogtalkTerminal._messageProcess = cp.spawn(`tail -f ${pathLogtalkMessageFile}`);
-
-              LogtalkTerminal._messageProcess.stdout.on('data', (data) => {
-                console.log(`stdout: ${data}`);
-              });
-
-              let executable = jsesc(section.get<string>("executable.path", "logtalk"));
-              let args = section.get<string[]>("terminal.runtimeArgs");
-              LogtalkTerminal._terminal = (<any>window).createTerminal(
-                "Logtalk",
-                executable,
-                args
-              );
-              let goals = `logtalk_load(coding('vscode/vscode_message_streamer.lgt')).\r`;
-              LogtalkTerminal.sendString(goals, false);
-
-            }
-          })
-        }      
-       
-
-      })
-
+      let executable = jsesc(section.get<string>("executable.path", "logtalk"));
+      let args = section.get<string[]>("terminal.runtimeArgs");
+      LogtalkTerminal._terminal = (<any>window).createTerminal(
+        "Logtalk",
+        executable,
+        args
+      );
+      let goals = `logtalk_load(coding('vscode/vscode_message_streamer.lgt')).\r`;
+      LogtalkTerminal.sendString(goals, false);
 
     } else {
       throw new Error("configuration settings error: logtalk");
@@ -116,29 +91,42 @@ export default class LogtalkTerminal {
   public static async loadDocument(uri: Uri, linter: LogtalkLinter) {
     
     const file: string = await LogtalkTerminal.ensureFile(uri);
+    let textDocument = null;
     let working_directory: string = path.dirname(uri.fsPath);
-    await workspace.openTextDocument(uri);
     let logtalkHome: string = '';
     let section = workspace.getConfiguration("logtalk");
+
     if (section) {
         logtalkHome = jsesc(section.get<string>("home.path", "logtalk"));
     } else {
         throw new Error("configuration settings error: logtalk");
     }
 
-    // await workspace.openTextDocument(uri).then(
-    //     (textDocument: TextDocument) => {
-    //         linter.doPlint(textDocument, LogtalkTerminal.sendString)
-    //     });
-    
+    let pathLogtalkMessageFile  = `${logtalkHome}/coding/vscode/.messages`;
+    // Remove the temp messages file
+    cp.spawn('rm', [`${pathLogtalkMessageFile}`]);
+
+    LogtalkTerminal._messages = cp.spawn('tail', ['-f',`${pathLogtalkMessageFile}`, '-n','0'])
+
+    await workspace.openTextDocument(uri).then((document: TextDocument) => { textDocument = document });
     LogtalkTerminal.createLogtalkTerm();
+
+    // Linting
+    linter.outputChannel.clear(); 
+    let message = '';
+    LogtalkTerminal._messages.stdout.on('data', function(data) {
+      let output = data.toString('ascii');
+      message += output;
+      console.log(data)
+      let last = data.slice(data.length-7, data.length);
+      if(last.toString() == '*     \n' || last.toString() == '!     \n') {
+        linter.lint(textDocument, message);
+        message = '';
+      } 
+    });
+
     LogtalkTerminal.sendString(`logtalk_load('${file}').\r`, false);
- 
-    // LogtalkTerminal.spawnScript(
-    //     ["logtalk_load", "logtalk.document.load", LogtalkTerminal._testerExec],
-    //     LogtalkTerminal._testerExec,
-    //     LogtalkTerminal._testerArgs
-    //   );
+
   }
 
   public static async make(uri: Uri) {

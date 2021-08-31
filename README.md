@@ -169,7 +169,7 @@ Feel free to report bugs or suggestions via [issues](https://github.com/arthwang
 
 ## Development 
 
-This extension has been package and tested with node v14.17.5 (latest LTS).
+This extension has been package and tested with node v12.
 You may install the extension directly from the .vsix file included in this repo.
 
 `vsix:make` makes the .vsix file, `vsix:install` installs it.
@@ -178,6 +178,7 @@ You may install the extension directly from the .vsix file included in this repo
 
 ### Version 4:
 
+- Regex overhaul & document lint
 - Logtalk linter does not run upon opening a document or workspace .
 - F8 performs `logtalk_make`.
 - F9 loads via `logtalk_load`.
