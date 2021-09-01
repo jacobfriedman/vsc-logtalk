@@ -216,8 +216,8 @@
             "properties": {
                 "logtalk.home.path": {
                     "type": "string",
-                    "default": "$LOGTALKHOME",
-                    "description": "Points to the Logtalk home directory."
+                    "default": "",
+                    "description": "Points to the Logtalk user directory."
                 },
                 "logtalk.executable.path": {
                     "type": "string",

@@ -33,23 +33,24 @@ export default class LogtalkTerminal {
     LogtalkTerminal._context = context;
 
     let section = workspace.getConfiguration("logtalk");
-    LogtalkTerminal._testerExec =   section.get<string>("tester.script", "logtalk_tester");
-    LogtalkTerminal._outputChannel = window.createOutputChannel("Logtalk Testers & Doclets");
-    LogtalkTerminal._testerArgs =   section.get<string[]>("tester.arguments");
-    LogtalkTerminal._docletExec =   section.get<string>("doclet.script", "logtalk_doclet" );
-    LogtalkTerminal._docletArgs =   section.get<string[]>("doclet.arguments");
-    LogtalkTerminal._docExec =      section.get<string>("documentation.script", "lgt2html");
-    LogtalkTerminal._docArgs =      section.get<string[]>("documentation.arguments");
-    LogtalkTerminal._graphvizExec = section.get<string>("graphviz.executable", "dot");
-    LogtalkTerminal._graphvizArgs = section.get<string[]>("graphviz.arguments");
-    LogtalkTerminal._graphvizExt =  section.get<string[]>("graphviz.extension");
+    
+    LogtalkTerminal._testerExec    =   section.get<string>("tester.script", "logtalk_tester");
+    LogtalkTerminal._outputChannel =   window.createOutputChannel("Logtalk Testers & Doclets");
+    LogtalkTerminal._testerArgs    =   section.get<string[]>("tester.arguments");
+    LogtalkTerminal._docletExec    =   section.get<string>("doclet.script", "logtalk_doclet" );
+    LogtalkTerminal._docletArgs    =   section.get<string[]>("doclet.arguments");
+    LogtalkTerminal._docExec       =   section.get<string>("documentation.script", "lgt2html");
+    LogtalkTerminal._docArgs       =   section.get<string[]>("documentation.arguments");
+    LogtalkTerminal._graphvizExec  =   section.get<string>("graphviz.executable", "dot");
+    LogtalkTerminal._graphvizArgs  =   section.get<string[]>("graphviz.arguments");
+    LogtalkTerminal._graphvizExt   =   section.get<string[]>("graphviz.extension");
 
     return (<any>window).onDidCloseTerminal(terminal => {
         LogtalkTerminal._terminal = null;
         terminal.dispose();
-        if ('kill' in LogtalkTerminal._messages) {
-          LogtalkTerminal._messages.kill('SIGHUP');
-        }
+        // if ('kill' in LogtalkTerminal._messages) {
+        //   LogtalkTerminal._messages.kill('SIGHUP');
+        // }
         
     });
   }
@@ -105,8 +106,11 @@ export default class LogtalkTerminal {
     let pathLogtalkMessageFile  = `${logtalkHome}/coding/vscode/.messages`;
     // Remove the temp messages file
     cp.spawn('rm', [`${pathLogtalkMessageFile}`]);
+    cp.spawn('touch', [`${pathLogtalkMessageFile}`]);
 
-    LogtalkTerminal._messages = cp.spawn('tail', ['-f',`${pathLogtalkMessageFile}`, '-n','0'])
+    var messages = cp.spawn('tail', ['-f',`${pathLogtalkMessageFile}`, '-n','0']);
+
+    console.log(messages);
 
     await workspace.openTextDocument(uri).then((document: TextDocument) => { textDocument = document });
     LogtalkTerminal.createLogtalkTerm();
@@ -114,10 +118,9 @@ export default class LogtalkTerminal {
     // Linting
     linter.outputChannel.clear(); 
     let message = '';
-    LogtalkTerminal._messages.stdout.on('data', function(data) {
+    messages.stdout.on('data', function(data) {
       let output = data.toString('ascii');
       message += output;
-      console.log(data)
       let last = data.slice(data.length-7, data.length);
       if(last.toString() == '*     \n' || last.toString() == '!     \n') {
         linter.lint(textDocument, message);
