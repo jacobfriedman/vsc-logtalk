@@ -62,7 +62,7 @@ export default class LogtalkTerminal {
 
     let section = workspace.getConfiguration("logtalk");
     if (section) {
-
+      let logtalkUser = jsesc(section.get<string>("home.path", "logtalk"));
       let executable = jsesc(section.get<string>("executable.path", "logtalk"));
       let args = section.get<string[]>("terminal.runtimeArgs");
       LogtalkTerminal._terminal = (<any>window).createTerminal(
@@ -70,7 +70,8 @@ export default class LogtalkTerminal {
         executable,
         args
       );
-      let goals = `logtalk_load(coding('vscode/vscode_message_streamer.lgt')).\r`;
+      let goals = `logtalk_load(coding('vscode/vscode_message_streamer.lgt'), [scratch_directory('${logtalkUser}/scratch')]).\r`;
+      
       LogtalkTerminal.sendString(goals, false);
 
     } else {
@@ -79,7 +80,7 @@ export default class LogtalkTerminal {
   }
 
   public static sendString(text: string, addNewLine = false) {
-    LogtalkTerminal.createLogtalkTerm();
+    // LogtalkTerminal.createLogtalkTerm();
     LogtalkTerminal._terminal.sendText(text, addNewLine);
     LogtalkTerminal._terminal.show(false);
   }
@@ -90,34 +91,38 @@ export default class LogtalkTerminal {
   }
 
   public static async loadDocument(uri: Uri, linter: LogtalkLinter) {
-    
+
+    // Declare Variables
     const file: string = await LogtalkTerminal.ensureFile(uri);
     let textDocument = null;
     let working_directory: string = path.dirname(uri.fsPath);
-    let logtalkHome: string = '';
+    let logtalkUser: string = '';
+
+    // Check for Configurations
     let section = workspace.getConfiguration("logtalk");
-
-    if (section) {
-        logtalkHome = jsesc(section.get<string>("home.path", "logtalk"));
-    } else {
-        throw new Error("configuration settings error: logtalk");
+    if (section) { 
+      logtalkUser = jsesc(section.get<string>("home.path", "logtalk")); 
+    } else { 
+      throw new Error("configuration settings error: logtalk"); 
     }
+    // Get the Scratch Directory
+    let pathLogtalkMessageFile  = `${logtalkUser}/scratch/.messages`;
 
-    let pathLogtalkMessageFile  = `${logtalkHome}/coding/vscode/.messages`;
-    // Remove the temp messages file
+    // Open the Text Document
+    await workspace.openTextDocument(uri).then((document: TextDocument) => { textDocument = document });
+
+    // Clear the Scratch Message File & Tail it
     cp.spawn('rm', [`${pathLogtalkMessageFile}`]);
     cp.spawn('touch', [`${pathLogtalkMessageFile}`]);
-
     var messages = cp.spawn('tail', ['-f',`${pathLogtalkMessageFile}`, '-n','0']);
 
-    console.log(messages);
-
-    await workspace.openTextDocument(uri).then((document: TextDocument) => { textDocument = document });
+    // Clear the Diagnostics & Output Channel
+    // Create the Terminal
     LogtalkTerminal.createLogtalkTerm();
 
-    // Linting
-    linter.outputChannel.clear(); 
+    // Lint the incoming messages
     let message = '';
+    let count = 0;
     messages.stdout.on('data', function(data) {
       let output = data.toString('ascii');
       message += output;
@@ -125,6 +130,9 @@ export default class LogtalkTerminal {
       if(last.toString() == '*     \n' || last.toString() == '!     \n') {
         linter.lint(textDocument, message);
         message = '';
+        count++
+        console.log(count)
+
       } 
     });
 

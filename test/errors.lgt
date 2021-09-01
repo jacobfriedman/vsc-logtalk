@@ -1,1 +1,1 @@
-:- initialization(logtalk_load([examples('errors/errors_loader'), examples('errors/warnings_loader')])).
+:- initialization(logtalk_load(errors('errors_loader'))).

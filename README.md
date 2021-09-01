@@ -12,6 +12,12 @@ A VS Code extension which provides language support for Logtalk. Forked from the
 
 This extension can be installed via extensions viewlet of VS Code or 'Extensions: install extension' command from the command palette. The author notices that it is developed and tested in **_Logtalk 3.49.0-b04_** and **_VS Code 1.60_** on **_Debian Ubuntu 20 (LTS)_** with **Node 12.0.0** . It's not yet tested under other environments.
 
+### Errors & Warnings Limitations
+
+This extension version uses `tail` to pull streamed warning and error messages from logtalk hooks into your scratch directory (scratch/.messages). Some operating systems will not parse a large throughput with tail. 
+
+*One suggestion is to write better code (such that you will not stress your computer above the limit of what it is prepared to report).*
+
 ## Features
 
 * [Syntax highlighting](#syntax-highlighting)
@@ -79,7 +85,6 @@ This extension can be installed via extensions viewlet of VS Code or 'Extensions
 ### Grammar linter
 
 * The grammar errors (if any) will display in OUTPUT channel when active source file is saved.
-
 * Command 'Goto next/previous error': see section Commands below.
 
 ![linter](images/linter.gif)
@@ -106,7 +111,6 @@ These commands can be triggered from editor/context and explorer/context menus v
 |            Make Document | Reloads the active source files into the Logtalk process                                                                                                 | F8          |
 |                Run Tests | Runs the tester file under the active source file directory                                                                                              |             |
 |               Run Doclet | Run the doclet file under the active source file directory                                                                                               |             |
-| Goto Next/Previous Error | Locate cursor to the nearest line with error/warning from current cursor location and the corresponding error/warning message displays in output channel | F7/shift-F7 |
 |           Scan Dead Code | Scans active file for dead code                                                                                                                          |             |
 |   Generate Documentation | Generates documentation for the files under the active source file directory                                                                             |             |
 |        Generate Diagrams | Generates diagrams for the files under the active source file directory                                                                                  |             |
@@ -179,7 +183,7 @@ You may install the extension directly from the .vsix file included in this repo
 ### Version 4:
 
 - Regex overhaul & document lint
-- Logtalk linter does not run upon opening a document or workspace .
+- Logtalk linter does not run upon opening a document or workspace.
 - F8 performs `logtalk_make`.
 - F9 loads via `logtalk_load`.
 

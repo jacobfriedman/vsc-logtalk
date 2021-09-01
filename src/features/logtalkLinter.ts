@@ -28,19 +28,17 @@ import { dirname, basename } from "path";
 import LogtalkTerminal from "./logtalkTerminal"; 
 
 export default class LogtalkLinter implements CodeActionProvider {
-  private diagnosticCollection: DiagnosticCollection;
-  private diagnostics: { [docName: string]: Diagnostic[] } = {};
+
+  public  diagnosticCollection: DiagnosticCollection;
+  public  diagnostics: { [docName: string]: Diagnostic[] } = {};
+  public  diagnosticHash = [];
   private filePathIds: { [id: string]: string } = {};
   private sortedDiagIndex: { [docName: string]: number[] } = {};
-  private msgRegex = /([^:]+):\s*([^:]+):(\d+):?\s*([\s\S]*)/;
-
-  private msgRegexSingle = /(\*|\!)+\s{5}(.+)\n[\*|\!]+\s{7}(.+)\n[\*|\!]\s{7}in file\s(\S+).+line\s(\d+)/;
-  private msgRegexMulti = /(\*|\!)+\s{5}(.+)\n[\*|\!]+\s{7}(.+)\n[\*|\!]\s{7}in file\s(\S+).+between lines\s(\d+)-(\d+)/;
-
+  private msgRegex = /(((\*|\!)\s{5}.+\n[\*|\!]\s{7}.+\n)|((\*|\!)\s{5}.+\n))[\*|\!]\s{7}.+\n[\*|\!]\s{7}in file\s(\S+).+((at or above line\s(\d+))|(between lines\s(\d+)\-(\d+)))/;
   private executable: string;
   private documentListener: Disposable;
   private openDocumentListener: Disposable;
-  public outputChannel: OutputChannel = null;
+  public  outputChannel: OutputChannel = null;
 
   constructor(private context: ExtensionContext) {
     this.executable = null;
@@ -57,48 +55,58 @@ export default class LogtalkLinter implements CodeActionProvider {
     return codeActions;
   }
   private parseIssue(issue: string) {
-    let match = issue.match(this.msgRegexSingle) || issue.match(this.msgRegexMulti);
+
+    if(this.diagnosticHash.includes(issue)) {
+      return true
+    } else {
+      this.diagnosticHash.push(issue)
+    }
+
+    let match = issue.match(this.msgRegex)
     if (match == null) { return null; }
 
     let severity: DiagnosticSeverity;
-    if(match[1] == '*') {
+    if(match[0][0] == '*') {
       severity = DiagnosticSeverity.Warning
     } else {
       severity = DiagnosticSeverity.Error
     } 
 
-    let fileName = this.filePathIds[match[4]]
-      ? this.filePathIds[match[4]]
-      : match[4];
+    let fileName = match[6];
+    console.log(fileName);
+    let lineFrom = 0,
+        lineTo   = 0;
+        console.log(match)
 
-    let line = parseInt(match[5]);
-    let fromCol = 0
-    let toCol = 200 // Default horizontal range
-    let fromPos = new Position(line, fromCol);
-    let toPos = match.length == 7 ? new Position(parseInt(match[6]), toCol) : new Position(line, toCol);
+    if(match[9]) {
+      lineFrom = parseInt(match[9])-1;
+      lineTo   = parseInt(match[9]);
+    } else {
+      lineFrom = parseInt(match[11])
+      lineTo   = parseInt(match[12])-1
+    }
+
+    let fromCol = 0;
+    let toCol = 200; // Default horizontal rangew
+    let fromPos = new Position(lineFrom, fromCol);
+    let toPos = new Position(lineTo, toCol);
     let range = new Range(fromPos, toPos);
-    let errMsg = match[2] + ' ' + match[3];
+    let errMsg = match[1].replace(new RegExp(/\*     /,'g'), '').replace(new RegExp(/\!     /,'g'), '')
     let diag = new Diagnostic(range, errMsg, severity);
+
     if (diag) {
       if (!this.diagnostics[fileName]) {
         this.diagnostics[fileName] = [diag];
       } else {
-        this.diagnostics[fileName].push(diag);
+          this.diagnostics[fileName].push(diag);
       }
     }
 
   }
 
   public lint(textDocument: TextDocument, message) {
-    console.log(message);
-    this.diagnostics = {};
-    this.sortedDiagIndex = {};
-    this.diagnosticCollection.delete(textDocument.uri);
-
     this.parseIssue(message);
-    
-    console.log('Single:', message.match(this.msgRegexSingle));
-    console.log('Multi:', message.match(this.msgRegexMulti));
+    this.diagnosticCollection.delete(textDocument.uri);
     
     for (let doc in this.diagnostics) {
       let index = this.diagnostics[doc]
@@ -117,8 +125,7 @@ export default class LogtalkLinter implements CodeActionProvider {
       let si = this.sortedDiagIndex[doc];
       for (let i = 0; i < si.length; i++) {
         let diag = this.diagnostics[doc][si[i]];
-        let severity =
-          diag.severity === DiagnosticSeverity.Error ? "ERROR" : "Warning";
+        let severity = diag.severity === DiagnosticSeverity.Error ? "ERROR" : "Warning";
         this.outputChannel.append(message)
       }
       if (si.length > 0) {
