@@ -226,6 +226,16 @@
                     "description": "Arguments of Logtalk executable run in terminal.",
                     "default": []
                 },
+                "logtalk.scratch.path": {
+                    "type": "string",
+                    "default": "/scratch",
+                    "description": "Logtalk scratch path i.e $LOGTALKUSER + /scratch"
+                },
+                "logtalk.vscode.messagefile": {
+                    "type": "string",
+                    "default": "/coding/vscode/vscode_message_streamer.lgt",
+                    "description": "Logtalk vscode_message_streamer.lgt location"
+                },
                 "logtalk.tester.script": {
                     "type": "string",
                     "default": "/usr/local/bin/logtalk_tester",
