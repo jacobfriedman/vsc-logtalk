@@ -27,9 +27,7 @@ This extension version uses `tail` to pull streamed warning and error messages f
 
 ## Feature descriptions and usages
 
-## Todo:
-
-* Windows-only: replace all backslashes with forwardslashes (terminal load), OR, replace backslashes with double-backslashes.
+Coming Soon
 
 ### Syntax highlighting
 
