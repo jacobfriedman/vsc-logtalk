@@ -65,7 +65,8 @@ export default class LogtalkTerminal {
 
     let section = workspace.getConfiguration("logtalk");
     if (section) {
-      let logtalkUser = jsesc(section.get<string>("home.path", "logtalk"));
+      let logtalkHome = jsesc(section.get<string>("home.path", "logtalk"));
+      let logtalkUser = jsesc(section.get<string>("user.path", "logtalk"));
       let executable = jsesc(section.get<string>("executable.path", "logtalk"));
       let args = section.get<string[]>("executable.arguments");
       LogtalkTerminal._terminal = (<any>window).createTerminal(
@@ -73,7 +74,7 @@ export default class LogtalkTerminal {
         executable,
         args
       );
-      let goals = `logtalk_load(coding('vscode/vscode_message_streamer.lgt'), [scratch_directory('${logtalkUser}/scratch')]).\r`;
+      let goals = `logtalk_load('${logtalkUser}/coding/vscode/vscode_message_streamer.lgt'), [scratch_directory('${logtalkHome}/scratch')]).\r`;
       
       LogtalkTerminal.sendString(goals, false);
 
@@ -99,17 +100,17 @@ export default class LogtalkTerminal {
     const file: string = await LogtalkTerminal.ensureFile(uri);
     let textDocument = null;
     let working_directory: string = path.dirname(uri.fsPath);
-    let logtalkUser: string = '';
+    let logtalkHome: string = '';
 
     // Check for Configurations
     let section = workspace.getConfiguration("logtalk");
     if (section) { 
-      logtalkUser = jsesc(section.get<string>("home.path", "logtalk")); 
+      logtalkHome = jsesc(section.get<string>("home.path", "logtalk")); 
     } else { 
       throw new Error("configuration settings error: logtalk"); 
     }
     // Get the Scratch Directory
-    let pathLogtalkMessageFile  = `${logtalkUser}/scratch/.messages`;
+    let pathLogtalkMessageFile  = `${logtalkHome}/scratch/.messages`;
 
     // Open the Text Document
     await workspace.openTextDocument(uri).then((document: TextDocument) => { textDocument = document });

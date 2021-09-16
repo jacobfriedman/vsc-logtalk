@@ -2,7 +2,7 @@
     "name": "vsc-logtalk",
     "displayName": "VSC-Logtalk",
     "description": "Support for Logtalk language",
-    "version": "0.4.5",
+    "version": "0.4.6",
     "publisher": "jacobfriedman",
     "icon": "images/logtalk.png",
     "license": "MIT",
@@ -207,6 +207,11 @@
             "title": "",
             "properties": {
                 "logtalk.home.path": {
+                    "type": "string",
+                    "default": "",
+                    "description": "Points to the Logtalk home directory."
+                },
+                "logtalk.user.path": {
                     "type": "string",
                     "default": "",
                     "description": "Points to the Logtalk user directory."
