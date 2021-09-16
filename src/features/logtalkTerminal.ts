@@ -10,19 +10,20 @@ import LogtalkLinter from "./logtalkLinter";
 import { isFunction } from "util";
 
 export default class LogtalkTerminal {
-  private static _context: ExtensionContext;
-  private static _messages : any;
-  private static _terminal: Terminal;
-  private static _testerExec: string;
-  private static _testerArgs: string[];
-  private static _docletExec: string;
-  private static _docletArgs: string[];
-  private static _docExec: string;
-  private static _docArgs: string[];
-  private static _graphvizExec: string;
-  private static _graphvizArgs: string[];
-  private static _graphvizExt: string[];
-  private static _outputChannel: OutputChannel;
+  private static _context:        ExtensionContext;
+  private static _messages :      any;
+  private static _terminal:       Terminal;
+  private static _execArgs:       string[];
+  private static _testerExec:     string;
+  private static _testerArgs:     string[];
+  private static _docletExec:     string;
+  private static _docletArgs:     string[];
+  private static _docExec:        string;
+  private static _docArgs:        string[];
+  private static _graphvizExec:   string;
+  private static _graphvizArgs:   string[];
+  private static _graphvizExt:    string[];
+  private static _outputChannel:  OutputChannel;
 
   constructor() {
 
@@ -34,11 +35,13 @@ export default class LogtalkTerminal {
 
     let section = workspace.getConfiguration("logtalk");
     
+    LogtalkTerminal._execArgs      =   section.get<string[]>("executable.arguments");
     LogtalkTerminal._testerExec    =   section.get<string>("tester.script", "logtalk_tester");
     LogtalkTerminal._outputChannel =   window.createOutputChannel("Logtalk Testers & Doclets");
     LogtalkTerminal._testerArgs    =   section.get<string[]>("tester.arguments");
     LogtalkTerminal._docletExec    =   section.get<string>("doclet.script", "logtalk_doclet" );
     LogtalkTerminal._docletArgs    =   section.get<string[]>("doclet.arguments");
+
     LogtalkTerminal._docExec       =   section.get<string>("documentation.script", "lgt2html");
     LogtalkTerminal._docArgs       =   section.get<string[]>("documentation.arguments");
     LogtalkTerminal._graphvizExec  =   section.get<string>("graphviz.executable", "dot");
@@ -64,7 +67,7 @@ export default class LogtalkTerminal {
     if (section) {
       let logtalkUser = jsesc(section.get<string>("home.path", "logtalk"));
       let executable = jsesc(section.get<string>("executable.path", "logtalk"));
-      let args = section.get<string[]>("terminal.runtimeArgs");
+      let args = section.get<string[]>("executable.arguments");
       LogtalkTerminal._terminal = (<any>window).createTerminal(
         "Logtalk",
         executable,
