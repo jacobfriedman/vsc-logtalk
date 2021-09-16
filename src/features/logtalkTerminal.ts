@@ -78,7 +78,7 @@ export default class LogtalkTerminal {
         executable,
         args
       );
-      let goals = `logtalk_load('${logtalkHome}${logtalkMessageFile}', [scratch_directory('${logtalkUser}${logtalkScratch}')].\r`;
+      let goals = `logtalk_load('${logtalkHome}${logtalkMessageFile}', [scratch_directory('${logtalkUser}${logtalkScratch}')]).\r`;
       
       LogtalkTerminal.sendString(goals, false);
 
