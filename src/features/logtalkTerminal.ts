@@ -78,7 +78,7 @@ export default class LogtalkTerminal {
         executable,
         args
       );
-      let goals = `logtalk_load('${logtalkHome}${logtalkMessageFile}'), [scratch_directory('${logtalkUser}${logtalkScratch}']).\r`;
+      let goals = `logtalk_load('${logtalkHome}${logtalkMessageFile}', [scratch_directory('${logtalkUser}${logtalkScratch}')].\r`;
       
       LogtalkTerminal.sendString(goals, false);
 
@@ -144,7 +144,9 @@ export default class LogtalkTerminal {
       } 
     });
 
-    LogtalkTerminal.sendString(`logtalk_load('${file}').\r`, false);
+    let sourceFile = file.replace(/\\/g, "/");
+
+    LogtalkTerminal.sendString(`logtalk_load('${sourceFile}').\r`, false);
 
   }
 
