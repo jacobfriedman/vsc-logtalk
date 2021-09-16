@@ -27,6 +27,10 @@ This extension version uses `tail` to pull streamed warning and error messages f
 
 ## Feature descriptions and usages
 
+## Todo:
+
+* Windows-only: replace all backslashes with forwardslashes (terminal load), OR, replace backslashes with double-backslashes.
+
 ### Syntax highlighting
 
 * Full syntax highlight for all Logtalk built-in control constructs, directives, methods, and predicates
@@ -214,3 +218,4 @@ The original author of this extension thanks Professor Paulo Moura who is the au
 ## License
 
 [MIT](http://www.opensource.org/licenses/mit-license.php)
+
