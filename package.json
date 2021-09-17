@@ -231,6 +231,11 @@
                     "default": "/scratch",
                     "description": "Logtalk scratch path i.e $LOGTALKUSER + /scratch"
                 },
+                "logtalk.tail.command": {
+                    "type": "string",
+                    "default": "tail",
+                    "description": "tail command to be used. In the format of <your tail command> -f $LOGTALKUSER/.messages -n -0"
+                },
                 "logtalk.vscode.messagefile": {
                     "type": "string",
                     "default": "/coding/vscode/vscode_message_streamer.lgt",
@@ -301,7 +306,7 @@
         "test": "tsc ./tests/runTest.ts",
         "syntax4logtalk": "yaml2json --pretty --save ./syntaxes/logtalk.tmLanguage.yaml",
         "vsix:make": "vsce package --baseImagesUrl https://raw.githubusercontent.com/llvm/llvm-project/master/clang-tools-extra/clangd/clients/clangd-vscode/",
-        "vsix:install": "code --install-extension vsc-logtalk-0.4.5.vsix"
+        "vsix:install": "code --install-extension vsc-logtalk-0.4.6.vsix"
     },
     "devDependencies": {
         "@types/bluebird": "^3.5.25",

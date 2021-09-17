@@ -79,7 +79,7 @@ export default class LogtalkTerminal {
         args
       );
       let goals = `logtalk_load('${logtalkHome}${logtalkMessageFile}', [scratch_directory('${logtalkUser}${logtalkScratch}')]).\r`;
-      
+      console.log(goals);
       LogtalkTerminal.sendString(goals, false);
 
     } else {
@@ -97,6 +97,7 @@ export default class LogtalkTerminal {
     LogtalkTerminal.createLogtalkTerm();
     LogtalkTerminal._terminal.show(true);
   }
+  
 
   public static async loadDocument(uri: Uri, linter: LogtalkLinter) {
 
@@ -104,17 +105,20 @@ export default class LogtalkTerminal {
     const file: string = await LogtalkTerminal.ensureFile(uri);
     let textDocument = null;
     let working_directory: string = path.dirname(uri.fsPath);
-    let logtalkHome: string = '';
-
+    let logtalkHome: string = '',
+        logtalkUser: string = '',
+        tailCommand: string = '';
     // Check for Configurations
     let section = workspace.getConfiguration("logtalk");
     if (section) { 
       logtalkHome = jsesc(section.get<string>("home.path", "logtalk")); 
+      logtalkUser = jsesc(section.get<string>("user.path", "logtalk")); 
+      tailCommand = jsesc(section.get<string>("tail.command", "logtalk")); 
     } else { 
       throw new Error("configuration settings error: logtalk"); 
     }
     // Get the Scratch Directory
-    let pathLogtalkMessageFile  = `${logtalkHome}/scratch/.messages`;
+    let pathLogtalkMessageFile  = `${logtalkUser}/scratch/.messages`;
 
     // Open the Text Document
     await workspace.openTextDocument(uri).then((document: TextDocument) => { textDocument = document });
@@ -122,7 +126,13 @@ export default class LogtalkTerminal {
     // Clear the Scratch Message File & Tail it
     cp.spawn('rm', [`${pathLogtalkMessageFile}`]);
     cp.spawn('touch', [`${pathLogtalkMessageFile}`]);
-    var messages = cp.spawn('tail', ['-f',`${pathLogtalkMessageFile}`, '-n','0']);
+    
+    const sleep = (waitTimeInMs) => new Promise (resolve => setTimeout (resolve, waitTimeInMs));
+    await sleep (500);
+
+    var messages = cp.spawn(tailCommand, ['-f',`${pathLogtalkMessageFile}`, '-n','0']);
+
+    console.log({cp: messages});
 
     // Clear the Diagnostics & Output Channel
     // Create the Terminal
@@ -140,9 +150,15 @@ export default class LogtalkTerminal {
         message = '';
         count++
         console.log(count)
-
       } 
     });
+
+    messages.stderr.on('data', function(data) {
+      console.log(data)
+    });
+
+
+
 
     let sourceFile = file.replace(/\\/g, "/");
 
