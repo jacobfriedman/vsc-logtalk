@@ -18,12 +18,11 @@ This extension can be installed via extensions viewlet of VS Code or 'Extensions
 ## ⚠️ Known Issues
 
 - `$LOGTALKUSER`'s full path must be manually entered in the extension settings.
+- The number of reported warnings and errors may be limited based on your Operating System (see below). 
 
 ### Errors & Warnings
 
-*The number of reported warnings and errors may be limited.*  This extension uses `tail` to pull streamed warning and error messages from logtalk hooks into your scratch directory (scratch/.messages). Some operating systems will not parse a large throughput with `tail`. 
-
-*One suggestion is to write better code (such that you will not stress your computer above the limit of what it is prepared to report).*
+This extension uses `tail` to pull streamed warning and error messages from logtalk hooks into your scratch directory (scratch/.messages). Some operating systems will not parse a large throughput with `tail`. *One suggestion is to write code with less errors or warnings...*
 
 ## Features
 
