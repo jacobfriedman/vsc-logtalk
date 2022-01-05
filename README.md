@@ -17,9 +17,11 @@ This extension can be installed via extensions viewlet of VS Code or 'Extensions
 
 ## ⚠️ Known Issues
 
-### Errors & Warnings Limitations
+- `$LOGTALKUSER`'s full path must be manually entered in the extension settings.
 
-This extension version uses `tail` to pull streamed warning and error messages from logtalk hooks into your scratch directory (scratch/.messages). Some operating systems will not parse a large throughput with tail. 
+### Errors & Warnings
+
+*The number of reported warnings and errors may be limited.*  This extension uses `tail` to pull streamed warning and error messages from logtalk hooks into your scratch directory (scratch/.messages). Some operating systems will not parse a large throughput with `tail`. 
 
 *One suggestion is to write better code (such that you will not stress your computer above the limit of what it is prepared to report).*
 
@@ -31,8 +33,6 @@ This extension version uses `tail` to pull streamed warning and error messages f
 * [Commands](#commands)
 
 ## Feature descriptions and usages
-
-Coming Soon
 
 ### Syntax highlighting
 
@@ -202,9 +202,9 @@ You may install the extension directly from the .vsix file included in this repo
 ### Version 4:
 
 - Regex overhaul & document lint
-- Logtalk linter does not run upon opening a document or workspace.
-- F8 performs `logtalk_make`.
-- F9 loads via `logtalk_load`.
+- Logtalk linter does not run upon opening a document or workspace anymore (to avoid running multiple instances of Logtalk)
+- F8 performs `logtalk_make`
+- F9 loads via `logtalk_load`
 
 ## Contributions
 
