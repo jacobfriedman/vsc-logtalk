@@ -185,7 +185,7 @@ These commands can be triggered from editor/context and explorer/context menus v
   * "logtalk.executable.arguments": [
     '-s'
     "C:\\Program Files (x86)\\Logtalk\\integration\\logtalk_swi.pl"
-  ] (SWI). This may be different for SICStus or other backends.
+  ] (SWI). This will be different for SICStus or other backends.
   
 
 
