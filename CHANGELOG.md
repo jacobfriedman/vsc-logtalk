@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.6]
+
+* Regex overhaul & document lint
+* Logtalk linter does not run upon opening a document or workspace anymore (to avoid running multiple instances of Logtalk)
+* F8 performs logtalk_make
+* F9 loads via logtalk_load
+
 ## [0.3.14]
 
 * add threaded_cancel/1 highlighting
