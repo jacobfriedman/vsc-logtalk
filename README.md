@@ -216,7 +216,11 @@ You may install the extension directly from the .vsix file included in this repo
 
 Due to Arthur's unavailability at the time of this plugin's development and since-deprecated modules, this extension has been adopted by new authors.
 
-The original author of this extension thanks Professor Paulo Moura who is the author of Logtalk for his patient help and support. Syntax highlighting, some snippets, and some commands are integrated from his distro of Logtalk.
+"The original author of this extension thanks Professor Paulo Moura who is the author of Logtalk for his patient help and support. Syntax highlighting, some snippets, and some commands are integrated from his distro of Logtalk."
+
+### Graphstax
+
+[Graphstax](https://graphstax.ai/) envisages a world-class, neurosymbolic computational approach for solving hard problems. [Logtalk](https://logtalk.org/) enables its ongoing quest for greatness.
 
 ## License
 
