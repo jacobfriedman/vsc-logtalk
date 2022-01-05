@@ -205,12 +205,7 @@ You may install the extension directly from the `.vsix` file included in this re
 
 ## Update Notes
 
-### Version 4:
-
-- Regex overhaul & document lint
-- Logtalk linter does not run upon opening a document or workspace anymore (to avoid running multiple instances of Logtalk)
-- F8 performs `logtalk_make`
-- F9 loads via `logtalk_load`
+Please see the [Changelog](https://github.com/jacobfriedman/vsc-logtalk/blob/master/CHANGELOG.md)
 
 ## Contributions
 
