@@ -17,12 +17,12 @@ This extension can be installed via extensions viewlet of VS Code or 'Extensions
 
 ## ⚠️ Known Issues
 
-- `$LOGTALKUSER` and `$LOGTALKHOME`'s full path must be manually entered in the extension settings (see [Configuration](#configurations)).
+- `$LOGTALKUSER` and `$LOGTALKHOME`'s full path must be entered in the extension settings (see [Configuration](#configurations)).
 - The number of reported warnings and errors may be limited based on your Operating System (see below). 
 
 ### Errors & Warnings
 
-This extension uses `tail` to pull streamed warning and error messages from logtalk hooks into your scratch directory (scratch/.messages). Some operating systems will not parse a large throughput with `tail`. *One suggestion is to write code with less errors or warnings...*
+This extension uses `tail` to pull streamed warning and error messages from logtalk hooks into your scratch directory (`$LOGTALKUSER/scratch/.messages`). Some operating systems will not parse a large throughput with `tail`. *One suggestion is to write code with less errors or warnings...*
 
 ## Features
 
@@ -185,7 +185,7 @@ These commands can be triggered from editor/context and explorer/context menus v
   * "logtalk.executable.arguments": [
     '-s'
     "C:\\Program Files (x86)\\Logtalk\\integration\\logtalk_swi.pl"
-  ]
+  ] (SWI). This may be different for SICStus or other backends.
   
 
 
