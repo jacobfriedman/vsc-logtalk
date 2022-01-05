@@ -15,6 +15,8 @@ A VS Code extension which provides language support for Logtalk. Forked from the
 
 This extension can be installed via extensions viewlet of VS Code or 'Extensions: install extension' command from the command palette. The author notices that it is developed and tested in **_Logtalk 3.49.0-b04_** and **_VS Code 1.60_** on **_Debian Ubuntu 20 (LTS)_** with **Node 12.0.0** . It's not yet tested under other environments.
 
+## Known Issues
+
 ### Errors & Warnings Limitations
 
 This extension version uses `tail` to pull streamed warning and error messages from logtalk hooks into your scratch directory (scratch/.messages). Some operating systems will not parse a large throughput with tail. 
