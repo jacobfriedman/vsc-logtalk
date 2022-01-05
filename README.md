@@ -205,7 +205,7 @@ You may install the extension directly from the `.vsix` file included in this re
 
 ## Update Notes
 
-Please see the [Changelog](https://github.com/jacobfriedman/vsc-logtalk/blob/master/CHANGELOG.md)
+Please see the [Changelog](https://github.com/jacobfriedman/vsc-logtalk/blob/master/CHANGELOG.md).
 
 ## Contributions
 
