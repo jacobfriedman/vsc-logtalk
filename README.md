@@ -2,6 +2,12 @@
 
 A VS Code extension which provides language support for Logtalk. Forked from the [original plugin by Arthur Wang](https://github.com/arthwang/vsc-logtalk).
 
+🙌 Sponsors: 
+- [Graphstax](https://graphstax.ai/)
+- [Logtalk](https://logtalk.org/). 
+
+Without these sponsors, this plugin would not have been created. 🙏
+
 ---
 
 [Features](#features) | [Configurations](#configurations) | [Bug Reporting](https://github.com/jacobfriedman/vsc-logtalk/issues)
