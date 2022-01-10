@@ -17,11 +17,12 @@ This extension can be installed via extensions viewlet of VS Code or 'Extensions
 
 ## ⚠️ Known Issues
 
-### Errors & Warnings Limitations
+- `$LOGTALKUSER` and `$LOGTALKHOME`'s full path must be entered in the extension settings (see [Configuration](#configurations)).
+- The number of reported warnings and errors may be limited based on your Operating System (see below). 
 
-This extension version uses `tail` to pull streamed warning and error messages from logtalk hooks into your scratch directory (scratch/.messages). Some operating systems will not parse a large throughput with tail. 
+### Errors & Warnings
 
-*One suggestion is to write better code (such that you will not stress your computer above the limit of what it is prepared to report).*
+This extension uses `tail` to pull streamed warning and error messages from logtalk hooks into your scratch directory (`$LOGTALKUSER/scratch/.messages`). Some operating systems will not parse a large throughput with `tail`. *One suggestion is to write code with less errors or warnings...*
 
 ## Features
 
@@ -31,8 +32,6 @@ This extension version uses `tail` to pull streamed warning and error messages f
 * [Commands](#commands)
 
 ## Feature descriptions and usages
-
-Coming Soon
 
 ### Syntax highlighting
 
@@ -44,11 +43,11 @@ Coming Soon
 
 * Indentation after new line
 * Built-in directive, method and predicate template auto-completion
-* Auto-complete recursive parameters: When '.'(dot) occures as first non-space character, VSC-Logtalk will repeat the nearest above head of clause and automatically change the parameters if possible.
+* Auto-complete recursive parameters: When '.'(dot) occurs as first non-space character, VSC-Logtalk will repeat the nearest above head of clause and automatically change the parameters if possible.
 
 > Note: Relations between entities use choice snippets. 'orel' triggers object relation choices and 'crel' for category. There is only one relation between protocols 'extends', so 'ext' will trigger the snippet.
 
-> The snippets for built-ins all are triggered by natural prefix, i.e. ':- public' triggers ':- public()' directive. You needn't to type all charaters to show up the suggestion list.
+> The snippets for built-ins all are triggered by natural prefix, i.e. ':- public' triggers ':- public()' directive. You needn't to type all characters to show up the suggestion list.
 
 > Refter to the table below for other snippets:
 
@@ -128,63 +127,70 @@ These commands can be triggered from editor/context and explorer/context menus v
 
 ## Configurations
 
-* The user can configure settings via VS Code menu File/Preferences/Settings. Entering 'logtalk' in the input box will show up Logtalk settings. The settings in this extension with their default values are:
+The user can configure settings via VS Code menu File/Preferences/Settings. Entering 'logtalk' in the input box will show up Logtalk settings. The settings in this extension with their default values are:
 
-  * "logtalk.executable.path": "/usr/local/bin/logtalk"
+    "logtalk.executable.path": "/usr/local/bin/logtalk"
 
-    This setting points to the Logtalk executable, which can be created by running the `logtalk_backend_select` script. In alternative, use the absolute path to the integration script you want to use, e.g. `swilgt` or `swilgt.sh`.
+This setting points to the Logtalk executable, which can be created by running the `logtalk_backend_select` script. In alternative, use the absolute path to the integration script you want to use (e.g. `/usr/local/bin/swilgt`). On Windows systems, use the absolute path to the Prolog backend (e.g. `C:\\Program Files\\swipl\\bin\\swipl.exe`) **and** then set the executable argument to load Logtalk (look into the properties of the Logtalk integration shortcuts that are available from the Start Menu after installing Logtalk).
 
-  * "logtalk.executable.arguments": [ ]
+    "logtalk.executable.arguments": [ ]
 
-    Arguments of Logtalk executable run in terminal.
+Arguments of Logtalk executable run in terminal. On Windows systems, this would be set to the argument that loads Logtalk at startup. For example:
 
-  * "logtalk.tester.script": "/usr/local/bin/logtalk_tester"
+    "logtalk.executable.arguments": [
+        '-s'
+        "C:\\Program Files (x86)\\Logtalk\\integration\\logtalk_swi.pl"
+    ]
 
-    Automation script for running tests.
+Recent Windows versions allows using forward slashes in paths.
 
-  * "logtalk.tester.arguments": [ ]
+    "logtalk.home.path": ""
 
-    Arguments for the automation script for running tests.
+No default. Must be set to the `LOGTALKHOME` environment variable absolute path.
 
-  * "logtalk.doclet.script": "/usr/local/bin/logtalk_doclet"
+    "logtalk.user.path": ""
+        
+No default; must be set to the `LOGTALKUSER` environment variable absolute path.
 
-    Automation script for running doclets.
+    "logtalk.tester.script": "/usr/local/bin/logtalk_tester"
 
-  * "logtalk.documentation.arguments": [ ]
+Automation script for running tests.
 
-    Arguments for the automation script for running doclets.
+    "logtalk.tester.arguments": [ ]
 
-  * "logtalk.documentation.script": "/usr/local/bin/lgt2html"
+Arguments for the automation script for running tests.
 
-    Script for converting the XML files generated by the Logtalk `lgtdoc` tool.
+    "logtalk.doclet.script": "/usr/local/bin/logtalk_doclet"
 
-  * "logtalk.documentation.arguments": [ ]
+Automation script for running doclets.
 
-    Arguments for the script that converts the XML files generated by the Logtalk `lgtdoc` tool.
+    "logtalk.documentation.arguments": [ ]
 
-  * "logtalk.graphviz.executable": "/usr/local/bin/dot"
+Arguments for the automation script for running doclets.
 
-    Graphviz executable for converting the `.dot` files generated by the Logtalk `diagrams` tool.
+    "logtalk.documentation.script": "/usr/local/bin/lgt2html"
 
-  * "logtalk.graphviz.arguments": ["-Tsvg"]
+Script for converting the XML files generated by the Logtalk `lgtdoc` tool.
 
-    Arguments for the Graphviz executable that converts the `.dot` files generated by the Logtalk `diagrams` tool.
+    "logtalk.documentation.arguments": [ ]
 
-  * "logtalk.graphviz.extension": ["svg"]
+Arguments for the script that converts the XML files generated by the Logtalk `lgtdoc` tool.
 
-    File name extension for the diagram files generated by the Graphviz executable.
+    "logtalk.graphviz.executable": "/usr/local/bin/dot"
+
+Graphviz executable for converting the `.dot` files generated by the Logtalk `diagrams` tool.
+
+    "logtalk.graphviz.arguments": ["-Tsvg"]
+
+Arguments for the Graphviz executable that converts the `.dot` files generated by the Logtalk `diagrams` tool.
+
+    "logtalk.graphviz.extension": ["svg"]
+
+File name extension for the diagram files generated by the Graphviz executable.
 
   ### Windows
-
-    * "logtalk.home.path": "C:\\Users\<your username>\\Documents\\logtalk"
-
-    * "logtalk.executable.path": "C:\\Program Files\\swipl\\bin\\swipl.exe" 
-    > Note: this is for swipl&windows users only
-
-  * "logtalk.executable.arguments": [
-    '-s'
-    "C:\\Program Files (x86)\\Logtalk\\integration\\logtalk_swi.pl"
-  ]
+  
+  Please see this [discussion](https://github.com/LogtalkDotOrg/logtalk3/discussions/128#discussioncomment-1912911) for a Windows configuration example.  
 
 ## Bug reporting
 
@@ -193,18 +199,13 @@ Feel free to report bugs or suggestions via [issues](https://github.com/arthwang
 ## Development 
 
 This extension has been package and tested with node v12.
-You may install the extension directly from the .vsix file included in this repo.
+You may install the extension directly from the `.vsix` file included in this repo.
 
-`vsix:make` makes the .vsix file, `vsix:install` installs it.
+`vsix:make` makes the `.vsix` file, `vsix:install` installs it.
 
 ## Update Notes
 
-### Version 4:
-
-- Regex overhaul & document lint
-- Logtalk linter does not run upon opening a document or workspace.
-- F8 performs `logtalk_make`.
-- F9 loads via `logtalk_load`.
+Please see the [Changelog](https://github.com/jacobfriedman/vsc-logtalk/blob/master/CHANGELOG.md).
 
 ## Contributions
 
