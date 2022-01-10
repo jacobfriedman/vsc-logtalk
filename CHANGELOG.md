@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.4.7]
+
+* TMLanguage Update
+
 ## [0.4.6]
 
 * Regex overhaul & document lint
