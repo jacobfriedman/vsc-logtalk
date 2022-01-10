@@ -87,6 +87,14 @@
       "match": "([{}])",
       "name": "keyword.operator.external-call.logtalk"
     },
+    {
+      "match": "(\\?|@)",
+      "name": "keyword.operator.mode.logtalk"
+    },
+    {
+      "match": "(@=<|@<|@>|@>=|==|\\\\==)",
+      "name": "keyword.operator.comparison.term.logtalk"
+    },
 
     {
       "match": "(<<|>>|/\\\\|\\\\/|\\\\)",
@@ -104,17 +112,9 @@
       "match": "(:-|!|\\\\+|,|;|-->|->|=|\\=|\\.|=\\.\\.|\\^|\\bas\\b|\\bis\\b)",
       "name": "keyword.operator.misc.logtalk"
     },
-	  {
+	{
       "match": "(=<|<|>|>=|=:=|=\\\\=)",
       "name": "keyword.operator.comparison.arithmetic.logtalk"
-    },
-    {
-      "match": "(@=<|@<|@>|@>=|==|\\\\==)",
-      "name": "keyword.operator.comparison.term.logtalk"
-    },
-    {
-      "match": "(\\?|@)",
-      "name": "keyword.operator.mode.logtalk"
     },
     {
       "match": "\\b(a(bs|cos|sin|tan|tan2)|c(eiling|os)|div|exp|flo(at(_(integer|fractional)_part)?|or)|log|m(ax|in|od)|r(em|ound)|s(i(n|gn)|qrt)|t(an|runcate)|xor)(?=[(])",
