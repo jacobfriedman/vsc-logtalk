@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.4.8]
+
+* Fix snippets deprecated version and date formats
+
 ## [0.4.7]
 
 * TMLanguage Update

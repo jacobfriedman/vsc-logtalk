@@ -2,7 +2,7 @@
     "name": "vsc-logtalk",
     "displayName": "VSC-Logtalk",
     "description": "Support for Logtalk language",
-    "version": "0.4.7",
+    "version": "0.4.8",
     "publisher": "jacobfriedman",
     "icon": "images/logtalk.png",
     "license": "MIT",
@@ -24,6 +24,11 @@
         "email": "jfriedman@graphstax.com"
     },
     "contributors": [
+				{
+						"name": "Paulo Moura",
+						"email": "support@logtalk.org",
+						"url": "https://github.com/LogtalkDotOrg"
+				},
         {
             "name": "Arthur Wang",
             "email": "rthrwang@gmail.com",
@@ -306,7 +311,7 @@
         "test": "tsc ./tests/runTest.ts",
         "syntax4logtalk": "yaml2json --pretty --save ./syntaxes/logtalk.tmLanguage.yaml",
         "vsix:make": "vsce package --baseImagesUrl https://raw.githubusercontent.com/llvm/llvm-project/master/clang-tools-extra/clangd/clients/clangd-vscode/",
-        "vsix:install": "code --install-extension vsc-logtalk-0.4.7.vsix"
+        "vsix:install": "code --install-extension vsc-logtalk-0.4.8.vsix"
     },
     "devDependencies": {
         "@types/bluebird": "^3.5.25",
