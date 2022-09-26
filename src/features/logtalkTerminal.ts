@@ -1,6 +1,7 @@
 "use strict";
 
-import { Terminal, window, workspace, TextDocument, Disposable, OutputChannel, Uri, ExtensionContext } from "vscode";
+import { Terminal, window, workspace, TextDocument, Disposable, OutputChannel, Uri, ExtensionContext, TerminalLink } from "vscode";
+import * as vscode from "vscode";
 import * as path from "path";
 import * as jsesc from "jsesc";
 import * as fs from "fs";
@@ -34,7 +35,7 @@ export default class LogtalkTerminal {
     LogtalkTerminal._context = context;
 
     let section = workspace.getConfiguration("logtalk");
-    
+	
     LogtalkTerminal._execArgs      =   section.get<string[]>("executable.arguments");
     LogtalkTerminal._testerExec    =   section.get<string>("tester.script", "logtalk_tester");
     LogtalkTerminal._outputChannel =   window.createOutputChannel("Logtalk Testers & Doclets");
@@ -58,6 +59,7 @@ export default class LogtalkTerminal {
     });
   }
 
+
   private static createLogtalkTerm() {
     if (LogtalkTerminal._terminal) {
       return;
@@ -78,6 +80,59 @@ export default class LogtalkTerminal {
         executable,
         args
       );
+
+			let UrlRegex = new RegExp(/(file\s)(\S+).+((at or above line\s(\d+))|(between lines\s(\d+)\-(\d+)))/);
+
+			vscode.window.registerTerminalLinkProvider({
+				provideTerminalLinks: (context: vscode.TerminalLinkContext, token: vscode.CancellationToken) => {
+
+					let match = UrlRegex.exec(context.line);
+		
+					if (match.length === 0) {
+						return [];
+					}
+
+					const startIndex = context.line.indexOf(match[0]) + 5; // "file"
+
+					let file = match[2] + ":"
+
+					if(match[7] && match[8]) {
+						file += match[7] + "-" + match[8]
+					} else {
+						file += match[5];
+					}
+	
+					return [{
+						startIndex,
+						length: match[2].length,
+						tooltip:  file
+					}]
+				},
+				handleTerminalLink: async (tooltipText) => {
+
+					let text =  tooltipText.tooltip.split(":");
+					let range = text[1].split("-");
+					var pos1 = new vscode.Position(parseInt(range[0]) - 1,0);
+					var pos2;
+					if(range[1]) {
+						pos2 = new vscode.Position(parseInt(range[1]),0);
+					} else {
+						pos2 = pos1;
+					}
+
+					vscode.workspace.openTextDocument(text[0]).then(
+						document => vscode.window.showTextDocument(document).then((editor) =>
+							{
+								editor.selections = [new vscode.Selection(pos1,pos2)]; 
+								var range = new vscode.Range(pos1, pos2);
+								editor.revealRange(range);
+							}					
+						)
+					)
+				}
+			});
+
+		
       let goals = `logtalk_load('${logtalkHome}${logtalkMessageFile}', [scratch_directory('${logtalkUser}${logtalkScratch}')]).\r`;
       console.log(goals);
       LogtalkTerminal.sendString(goals, false);
@@ -156,9 +211,6 @@ export default class LogtalkTerminal {
     messages.stderr.on('data', function(data) {
       console.log(data)
     });
-
-
-
 
     let sourceFile = file.replace(/\\/g, "/");
 

@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.4.9]
+
+* Warnings/errors are parsed in the terminal as links (jump-to with ctrl+click)
+
+
 ## [0.4.8]
 
 * Fix snippets deprecated version and date formats

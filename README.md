@@ -90,10 +90,12 @@ This extension uses `tail` to pull streamed warning and error messages from logt
 
 ### Grammar linter
 
+* Errors/warnings from file sources in the Logtalk terminal can be jumped to with ctrl+click.
 * The grammar errors (if any) will display in OUTPUT channel when active source file is saved.
 * Command 'Goto next/previous error': see section Commands below.
 
 ![linter](images/linter.gif)
+
 
 ### Commands
 
