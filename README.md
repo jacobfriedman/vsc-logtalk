@@ -2,7 +2,7 @@
 
 A VS Code extension which provides language support for Logtalk. Forked from the [original plugin by Arthur Wang](https://github.com/arthwang/vsc-logtalk).
 
-🙌 Sponsored by [Graphstax](https://graphstax.ai/) and [Logtalk](https://logtalk.org/).
+🙌 Sponsored by [Permion](https://permion.ai/) and [Logtalk](https://logtalk.org/).
 🙏 _Without these sponsors, this plugin would not have been created._ 
 
 ---
@@ -200,10 +200,10 @@ Feel free to report bugs or suggestions via [issues](https://github.com/arthwang
 
 ## Development 
 
-This extension has been package and tested with node v12.
+This extension has been package and tested with node v16.
 You may install the extension directly from the `.vsix` file included in this repo.
 
-`vsix:make` makes the `.vsix` file, `vsix:install` installs it.
+After running `npm install`, `npm run vsix:make` makes the `.vsix` file and `npm run  vsix:install` installs it.
 
 ## Update Notes
 
