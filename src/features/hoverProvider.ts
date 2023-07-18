@@ -28,7 +28,7 @@ export default class LogtalkHoverProvider implements HoverProvider {
     }
     let pi = Utils.getPredicateUnderCursor(doc, position);
     let contents: string[] = Utils.getSnippetDescription(doc, pi);
-    return contents === [] ? null : new Hover(contents, wordRange);
+    return contents.length == 0 ? null : new Hover(contents, wordRange);
 
   }
   
