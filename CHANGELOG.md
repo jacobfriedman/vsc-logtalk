@@ -1,9 +1,10 @@
 # Changelog
 
+* fixed syntax highlighting of escape sequences in double-quoted terms
+
 ## [0.4.9]
 
 * Warnings/errors are parsed in the terminal as links (jump-to with ctrl+click)
-
 
 ## [0.4.8]
 
