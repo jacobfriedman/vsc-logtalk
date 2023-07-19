@@ -1,6 +1,8 @@
 # ⚠️ UPDATE ⚠️
 
-Moved to [Logtalk for VSCode](https://github.com/LogtalkDotOrg/logtalk-for-vscode). Please refer to that branch for the latest VSCode extension updates.
+Moved to [Logtalk for VSCode](https://github.com/LogtalkDotOrg/logtalk-for-vscode). 
+
+Please refer to the latest fork for the latest VSCode extension.
 
 This branch is !! INACTIVE !!
 
