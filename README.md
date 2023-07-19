@@ -1,4 +1,12 @@
-# VSC-Logtalk
+# ⚠️ UPDATE ⚠️
+
+Moved to [Logtalk for VSCode](https://github.com/LogtalkDotOrg/logtalk-for-vscode). Please see
+
+This branch is !! INACTIVE !!
+
+---
+
+## VSC-Logtalk
 
 A VS Code extension which provides language support for Logtalk. Forked from the [original plugin by Arthur Wang](https://github.com/arthwang/vsc-logtalk).
 
